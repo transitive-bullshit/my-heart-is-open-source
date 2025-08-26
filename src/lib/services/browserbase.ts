@@ -15,7 +15,11 @@ export async function getBrowser({
   projectId?: string
 } = {}): Promise<Browser> {
   const session = await bb.sessions.create({
-    projectId
+    projectId,
+    browserSettings: {
+      recordSession: false,
+      blockAds: true
+    }
   })
 
   return chromium.connectOverCDP(session.connectUrl)

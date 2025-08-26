@@ -15,8 +15,6 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const url = searchParams.get('url')
 
-  console.log({ url })
-
   if (!url) {
     return notFound()
   }
@@ -26,6 +24,8 @@ export async function GET(request: NextRequest) {
   const revalidate = revalidateRaw ? Math.max(revalidateRaw, 3600) : 86_400
   const format = 'png'
   const omitBackground = searchParams.get('ob') === 'true'
+
+  console.log({ url, selector })
 
   // const url = 'https://github.com/transitive-bullshit'
   // const selector = '.js-calendar-graph > div'
@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
   // )
   // const screenshot = await getScreenshot()
 
+  // TODO: cache this heavily
   const screenshot = await getElementScreenshot({
     url,
     selector,
@@ -74,7 +75,7 @@ export async function GET(request: NextRequest) {
       width = Math.round(height * (imageSize.width / imageSize.height))
     }
 
-    // console.log({ width, height, imageSize, padding, br, bgColor })
+    console.log({ url, width, height, imageSize, padding, br, bgColor })
 
     return new ImageResponse(
       (
