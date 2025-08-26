@@ -4,12 +4,14 @@ export async function getElementScreenshot({
   url,
   selector,
   quality,
-  format
+  format,
+  omitBackground = false
 }: {
   url: string
   selector?: string
   quality?: number
   format?: 'png' | 'jpg' | 'jpeg'
+  omitBackground?: boolean
 }) {
   const browser = await getBrowser()
 
@@ -25,7 +27,8 @@ export async function getElementScreenshot({
       caret: 'hide',
       type: format === 'png' ? 'png' : 'jpeg',
       quality,
-      timeout: 15_000
+      timeout: 15_000,
+      omitBackground
     })
 
     return screenshot
