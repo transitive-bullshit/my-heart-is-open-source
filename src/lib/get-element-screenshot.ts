@@ -5,14 +5,18 @@ import { getBrowser } from './services/browserbase'
 export async function getElementScreenshot({
   url,
   selector = 'body',
-  quality,
+  nth = 0,
   format = 'png',
+  quality,
+  css,
   omitBackground = false
 }: {
   url: string
   selector?: string
+  nth?: number
   quality?: number
   format: 'png' | 'jpg' | 'jpeg'
+  css?: string
   omitBackground?: boolean
 }) {
   const browser = await getBrowser()
@@ -36,7 +40,11 @@ export async function getElementScreenshot({
     `
     })
 
-    const element = page.locator(selector)
+    if (css) {
+      await page.addStyleTag({ content: css })
+    }
+
+    const element = page.locator(selector).nth(nth)
     await element.scrollIntoViewIfNeeded()
 
     const screenshot = await element.screenshot({

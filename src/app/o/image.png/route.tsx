@@ -20,6 +20,8 @@ export async function GET(request: NextRequest) {
   }
 
   const selector = searchParams.get('s') || undefined
+  const nth = Number.parseInt(searchParams.get('nth')!) || undefined
+  const css = searchParams.get('css') || undefined
   const revalidateRaw = Number.parseInt(searchParams.get('r')!) || undefined
   const revalidate = revalidateRaw ? Math.max(revalidateRaw, 3600) : 86_400
   const format = 'png'
@@ -50,6 +52,8 @@ export async function GET(request: NextRequest) {
     url,
     selector,
     format,
+    css,
+    nth,
     omitBackground
   })
   const imageSize = imageDimensionsFromData(screenshot)!
