@@ -2,7 +2,6 @@ import assert from 'node:assert'
 
 import type { NextRequest } from 'next/server'
 import { imageDimensionsFromData } from 'image-dimensions'
-// import { unstable_cache as cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { ImageResponse } from 'next/og'
 import parseCssColor from 'parse-css-color'
@@ -21,6 +20,7 @@ export async function GET(request: NextRequest) {
 
   const selector = searchParams.get('s') || undefined
   const nth = Number.parseInt(searchParams.get('nth')!) || undefined
+  const dpi = Number.parseInt(searchParams.get('dpi')!) || undefined
   const css = searchParams.get('css') || undefined
   const revalidateRaw = Number.parseInt(searchParams.get('r')!) || undefined
   const revalidate = revalidateRaw ? Math.max(revalidateRaw, 3600) : 86_400
@@ -29,24 +29,6 @@ export async function GET(request: NextRequest) {
 
   console.log({ url, selector })
 
-  // const url = 'https://github.com/transitive-bullshit'
-  // const selector = '.js-calendar-graph > div'
-
-  // const getScreenshot = cache(
-  //   async () => {
-  //     return getElementScreenshot({
-  //       url,
-  //       selector,
-  //       format
-  //     })
-  //   },
-  //   [url, format, selector].filter(Boolean),
-  //   {
-  //     revalidate
-  //   }
-  // )
-  // const screenshot = await getScreenshot()
-
   // TODO: cache this heavily
   const screenshot = await getElementScreenshot({
     url,
@@ -54,21 +36,23 @@ export async function GET(request: NextRequest) {
     format,
     css,
     nth,
+    dpi,
     omitBackground
   })
   const imageSize = imageDimensionsFromData(screenshot)!
   assert.ok(imageSize?.width > 0 && imageSize?.height > 0, 'Invalid image size')
 
   const contentType = format === 'png' ? 'image/png' : 'image/jpeg'
+  const padding = Number.parseInt(searchParams.get('p')!) || 0
   let width = Number.parseInt(searchParams.get('w')!) || undefined
   let height = Number.parseInt(searchParams.get('h')!) || undefined
-  const padding = Number.parseInt(searchParams.get('p')!) || 0
-  const br = Number.parseInt(searchParams.get('br')!) || undefined
-  const bgRaw = searchParams.get('bg') || undefined
-  const bgColor = bgRaw && parseCssColor(bgRaw) ? bgRaw : undefined
 
   if (width || height || padding) {
     const screenshotUrl = `data:${contentType};base64,${screenshot.toString('base64')}`
+
+    const br = Number.parseInt(searchParams.get('br')!) || undefined
+    const bgRaw = searchParams.get('bg') || undefined
+    const bgColor = bgRaw && parseCssColor(bgRaw) ? bgRaw : undefined
 
     if (!width && !height) {
       width = imageSize.width + padding * 2

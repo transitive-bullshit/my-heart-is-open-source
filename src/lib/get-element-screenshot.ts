@@ -1,6 +1,7 @@
-// import { devices } from 'playwright-core'
+import { devices } from 'playwright-core'
 
-import { getBrowser } from './services/browserbase'
+// import { getBrowser } from './services/browserbase'
+import { getBrowser } from './services/kernel'
 
 export async function getElementScreenshot({
   url,
@@ -8,6 +9,7 @@ export async function getElementScreenshot({
   nth = 0,
   format = 'png',
   quality,
+  dpi = 2,
   css,
   omitBackground = false
 }: {
@@ -16,18 +18,20 @@ export async function getElementScreenshot({
   nth?: number
   quality?: number
   format: 'png' | 'jpg' | 'jpeg'
+  dpi?: number
   css?: string
   omitBackground?: boolean
 }) {
   const browser = await getBrowser()
 
   try {
-    // TODO: it looks like a BrowserBase bug where high dpi screenshots are not offset correctly
+    // TODO: BrowserBase has a bug where high dpi screenshots are not offset correctly
     // const ctx = await browser.newContext({ ...devices['Desktop Chrome HiDPI'] })
-    // const page = await ctx.newPage()
-
-    const ctx = browser.contexts()[0]!
-    const page = ctx.pages()[0]!
+    const ctx =
+      dpi === 1
+        ? (browser.contexts()[0] ?? (await browser.newContext()))
+        : await browser.newContext({ ...devices['Desktop Chrome HiDPI'] })
+    const page = ctx.pages()[0] ?? (await ctx.newPage())
 
     await page.goto(url)
     await page.emulateMedia({ reducedMotion: 'reduce' })
@@ -52,7 +56,7 @@ export async function getElementScreenshot({
       caret: 'hide',
       type: format === 'png' ? 'png' : 'jpeg',
       quality,
-      scale: 'css',
+      scale: 'device',
       timeout: 15_000,
       omitBackground
     })
