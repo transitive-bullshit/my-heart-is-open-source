@@ -5,7 +5,7 @@
 
 # Embed Anything <!-- omit from toc -->
 
-## github examples
+## examples
 
 ### github contributor graph
 
@@ -23,7 +23,7 @@ new URLSearchParams({
 }).toString()
 ```
 
-## github repo star count
+### github repo star count
 
 <img alt="github repo star count" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/media/github-repo-star-count">
 
@@ -37,11 +37,9 @@ new URLSearchParams({
 }).toString()
 ```
 
-## twitter examples
-
 ### twitter header
 
-<img alt="twitter header" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/media/twitter-header.jpg">
+<img alt="twitter header" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/media/twitter-header.jpg" width="600">
 
 `http://localhost:3000/o/image.png?url=https%3A%2F%2Fx.com%2Ftransitive_bs&s=div%3Ahas%28%3E+a%5Bhref%24%3D%22%2Fheader_photo%22%5D%29`
 
@@ -55,7 +53,7 @@ new URLSearchParams({
 
 ### twitter pinned tweet
 
-<img alt="pinned tweet" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/media/pinned-tweet.png">
+<img alt="pinned tweet" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/media/pinned-tweet.png" width="600">
 
 `http://localhost:3000/o/image.png?url=https%3A%2F%2Fx.com%2Ftransitive_bs&s=article&css=div%5Bstyle%5E%3D%22position%3A+absolute%22%5D+%7B+display%3A+none+%7D`
 
@@ -69,7 +67,7 @@ new URLSearchParams({
 
 ### twitter nth public tweet
 
-<img alt="twitter-nth-tweet" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/media/twitter-nth-tweet.jpg">
+<img alt="twitter-nth-tweet" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/media/twitter-nth-tweet.jpg" width="600">
 
 ```ts
 new URLSearchParams({
