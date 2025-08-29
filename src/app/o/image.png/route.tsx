@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
   const css = searchParams.get('css') || undefined
   const revalidateRaw = Number.parseInt(searchParams.get('r')!) || undefined
   const revalidate = revalidateRaw ? Math.max(revalidateRaw, 3600) : 86_400
-  const format = 'png'
   const omitBackground = searchParams.get('ob') === 'true'
+  const format = 'png'
 
   console.log({ url, selector, prompt })
 
