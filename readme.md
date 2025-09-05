@@ -78,6 +78,44 @@ new URLSearchParams({
 }).toString()
 ```
 
+---
+
+```js
+let daysRaw = Array.from(
+  $$('table[role=grid] td').map((e) => {
+    const label = e.getAttribute('aria-labelledby')
+    if (!label) return
+
+    const $label = $(`#${label}`)
+    const labelText = $label.textContent
+    const numContributions = Number.parseInt(
+      labelText.match(/(\d+) contribution/i)?.[1] ?? '0'
+    )
+    const date = labelText.match('contributions? on ([^.]*)\.?$')?.[1]
+    if (!date) {
+      console.log('no date', labelText)
+    }
+
+    return {
+      level: Number.parseInt(e.getAttribute('data-level')),
+      numContributions,
+      date
+    }
+  })
+)
+
+// daysRaw.sort((a, b) => a.date.localeCompare(b.date))
+let stride = Math.floor(daysRaw.length / 7)
+let days = []
+for (let i = 0; i < 365; ++i) {
+  const weekday = Math.floor(i / (stride + 1))
+  const week = i % stride
+
+  console.log({ ...daysRaw[i], weekday, week, i })
+  days[week * 7 + weekday] = daysRaw[i]
+}
+```
+
 ## License
 
 MIT © [Travis Fischer](https://x.com/transitive_bs)
