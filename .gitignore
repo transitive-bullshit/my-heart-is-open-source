@@ -56,3 +56,6 @@ out/
 .eslintcache
 .nitro
 .tanstack
+
+
+src/lib/extract-github-contributions.js
