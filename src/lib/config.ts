@@ -3,11 +3,11 @@ export const isServer = globalThis.window === undefined
 export const isSafari =
   !isServer && /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 
-export const title = 'Embed Anything'
+export const title = 'My Heart is Open Source'
 export const description = 'TODO'
 export const domain =
   process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ??
-  'embed-anything.vercel.app'
+  'myheartisopensource.com'
 
 export const author = 'Travis Fischer'
 export const authorTwitterUsername = 'transitive_bs'
@@ -15,7 +15,8 @@ export const copyright = `© ${new Date().getFullYear()} Transitive Bullshit. Al
 
 // external urls
 export const twitterUrl = `https://x.com/${authorTwitterUsername}`
-export const githubUrl = 'https://github.com/transitive-bullshit/embed-anything'
+export const githubUrl =
+  'https://github.com/transitive-bullshit/my-heart-is-open-source'
 
 export const env =
   process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV ?? 'development'
