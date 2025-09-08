@@ -1,4 +1,6 @@
 import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
 
 import { HeroButton } from '@/components/hero-button'
 import { DotScreenShader } from '@/components/ui/dot-shader-background'
@@ -24,6 +26,8 @@ import Example17 from '@/public/examples/17.jpg'
 import Example18 from '@/public/examples/18.jpg'
 import Example19 from '@/public/examples/19.jpg'
 import ExampleHero from '@/public/examples/hero.jpg'
+import ExampleStep1 from '@/public/examples/step-1.jpg'
+import ExampleStep2 from '@/public/examples/step-2.jpg'
 import GHCongributionGraph from '@/public/github-contribution-graph-cropped.png'
 
 const exampleImages = [
@@ -97,13 +101,13 @@ export default function HomePage() {
 
       <CTASection />
 
-      <section className='flex flex-col gap-10 mb-16 items-center'>
+      <section className='flex flex-col gap-10 px-2 items-center'>
         <h2 className='text-center text-balance leading-snug md:leading-none text-4xl font-semibold'>
           Different styles to choose from
         </h2>
 
         <div className='max-w-7xl'>
-          <div className='not-prose grid grid-cols-1 gap-8 sm:grid-cols-2'>
+          <div className='not-prose grid grid-cols-1 gap-8 lg:gap-8 sm:grid-cols-2'>
             {exampleImages.map((image) => (
               <Image
                 key={image.src}
@@ -120,22 +124,68 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className='relative z-10 flex flex-col gap-10 mb-16 items-center'>
+      <section className='relative z-10 flex flex-col gap-10 items-center'>
         <h1 className='text-center text-balance leading-snug md:leading-none text-4xl font-semibold'>
           How it works
         </h1>
 
-        <div className='max-w-7xl'>
-          <Image
-            key={GHCongributionGraph.src}
-            src={GHCongributionGraph.src}
-            alt='GitHub Contribution Graph'
-            placeholder='blur'
-            width={GHCongributionGraph.width}
-            height={GHCongributionGraph.height}
-            blurDataURL={GHCongributionGraph.blurDataURL}
-            className='rounded-sm shadow-sm w-full'
-          />
+        <div className='flex flex-col gap-8 items-center max-w-2xl'>
+          <div className='flex flex-col gap-4 items-center'>
+            <p className='text-center text-balance'>
+              First we take a screenshot of your GitHub contribution graph using
+              a headless browser.
+            </p>
+
+            <Image
+              key={GHCongributionGraph.src}
+              src={GHCongributionGraph.src}
+              alt='GitHub Contribution Graph'
+              placeholder='blur'
+              width={GHCongributionGraph.width}
+              height={GHCongributionGraph.height}
+              blurDataURL={GHCongributionGraph.blurDataURL}
+              className='rounded-sm shadow-sm w-full max-w-md'
+            />
+          </div>
+
+          <div className='flex flex-col gap-4 items-center'>
+            <p className='text-center text-balance'>
+              Then we use nano banana to create a billboard image with a green
+              screen background and your contribution graph on top. Breaking
+              this into its own step helps the image model match your
+              contribution graph more closely, though it likely still won't be
+              100% accurate.
+            </p>
+
+            <Image
+              key={ExampleStep1.src}
+              src={ExampleStep1.src}
+              alt='Step 2: billboard with green screen'
+              placeholder='blur'
+              width={ExampleStep1.width}
+              height={ExampleStep1.height}
+              blurDataURL={ExampleStep1.blurDataURL}
+              className='rounded-sm shadow-sm w-full max-w-md'
+            />
+          </div>
+
+          <div className='flex flex-col gap-4 items-center'>
+            <p className='text-center text-balance'>
+              Lastly, we use nano banana again to create the final image output
+              with a specific style.
+            </p>
+
+            <Image
+              key={ExampleStep2.src}
+              src={ExampleStep2.src}
+              alt='Step 3 final output'
+              placeholder='blur'
+              width={ExampleStep2.width}
+              height={ExampleStep2.height}
+              blurDataURL={ExampleStep2.blurDataURL}
+              className='rounded-sm shadow-sm w-full max-w-md'
+            />
+          </div>
         </div>
       </section>
 
@@ -145,20 +195,26 @@ export default function HomePage() {
 }
 
 function CTASection() {
+  const [githubUsername, setGithubUsername] = useState('')
+
   return (
-    <section className='flex flex-col gap-10 mb-16 items-center'>
+    <section className='flex flex-col gap-10 px-2 items-center'>
       <h2 className='text-center text-balance leading-snug md:leading-none text-4xl font-semibold'>
         Generate your own billboard images
       </h2>
 
-      <div className='flex flex-row gap-4 items-stretch'>
+      <div className='flex flex-col md:flex-row gap-8 md:gap-4 items-center w-full max-w-lg'>
         <Input
-          className='w-[20em] p-5'
+          className='p-6 md:flex-1 md:p-5'
           placeholder='Enter your GitHub username'
           name='github-username'
+          value={githubUsername}
+          onChange={(e) => setGithubUsername(e.target.value)}
         />
 
-        <HeroButton className='h-full'>Generate Images</HeroButton>
+        <HeroButton className='h-full' asChild>
+          <Link href={`/${githubUsername}`}>Generate Images</Link>
+        </HeroButton>
       </div>
     </section>
   )

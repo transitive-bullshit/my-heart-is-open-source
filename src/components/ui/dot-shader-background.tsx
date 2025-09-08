@@ -70,8 +70,8 @@ const DotMaterial = shaderMaterial(
       float circleMaskCenter = length(uv - centerDisplace);
       float circleMaskFromCenter = smoothstep(0.5, 1.0, circleMaskCenter);
 
-      // float combinedMask = screenMask * circleMaskFromCenter;
-      float combinedMask = screenMask;
+      float combinedMask = screenMask * circleMaskFromCenter;
+      // float combinedMask = screenMask;
       float circleAnimatedMask = sin(time * 2.0 + circleMaskCenter * 10.0);
 
       // Mouse trail effect
