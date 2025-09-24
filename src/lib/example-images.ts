@@ -17,12 +17,18 @@ import Example15 from '@/public/examples/15.jpg'
 import Example16 from '@/public/examples/16.jpg'
 import Example17 from '@/public/examples/17.jpg'
 import Example18 from '@/public/examples/18.jpg'
-import ExampleBKK from '@/public/examples/bkk.jpg'
+import ExampleHero from '@/public/examples/hero.jpg'
 import ExampleMoon from '@/public/examples/moon.jpg'
 
 import type { GeneratedImage, GeneratedImageWorkflow } from './types'
 
 const images = [
+  {
+    image: ExampleHero,
+    template: 'billboard',
+    prompt:
+      `place this billboard into the vibrant city of Bangkok at night. make sure that the billboard content is clearly visible`.trim()
+  },
   {
     image: Example0,
     template: 'billboard',
@@ -39,13 +45,13 @@ const images = [
     image: Example2,
     template: 'billboard',
     prompt:
-      `place this billboard into a vibrant whimsical city in the style of an animated studio ghibli movie. the focus of the image is the billboard, so make sure it is large and clearly visible.`.trim()
+      `place this billboard into a vibrant whimsical city in the style of an animated studio ghibli movie. the focus of the image is the billboard, so make sure it is large and clearly visible`.trim()
   },
   {
     image: Example3,
     template: 'billboard',
     prompt:
-      `place this billboard into a vibrant whimsical city in the style of an animated studio ghibli movie. the focus of the image is the billboard, so make sure it is large and clearly visible.`.trim()
+      `place this billboard into a vibrant whimsical city in the style of an animated studio ghibli movie. the focus of the image is the billboard, so make sure it is large and clearly visible`.trim()
   },
   {
     image: Example4,
@@ -94,7 +100,7 @@ const images = [
     image: Example10,
     template: 'billboard',
     prompt:
-      `place this billboard into the vibrant city of Coruscant from Star Wars. make sure there are plenty of flying vehicles in the air and that the billboard content is clearly visible.`.trim()
+      `place this billboard into the vibrant city of Coruscant from Star Wars. make sure there are plenty of flying vehicles in the air and that the billboard content is clearly visible`.trim()
   },
   {
     image: Example11,
@@ -112,7 +118,7 @@ const images = [
     image: Example13,
     template: 'billboard',
     prompt:
-      `place this billboard into the vibrant city of Manhattan in Times Square at night. make sure that the billboard content is clearly visible.`.trim()
+      `place this billboard into the vibrant city of Manhattan in Times Square at night. make sure that the billboard content is clearly visible`.trim()
   },
   {
     image: Example14,
@@ -143,12 +149,6 @@ const images = [
     template: 'billboard',
     prompt:
       `place this billboard into a vibrant, dense modern city plaza with skyscrapers in the background styled using 3D and basic phong shading and a simple skybox in a 3D editor like Blender. make sure the billboard's content is clearly visible`.trim()
-  },
-  {
-    image: ExampleBKK,
-    template: 'billboard',
-    prompt:
-      `place this billboard into the vibrant city of Bangkok at night. make sure that the billboard content is clearly visible.`.trim()
   }
 ] as const
 

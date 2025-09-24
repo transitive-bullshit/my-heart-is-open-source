@@ -1,7 +1,7 @@
 'use client'
 
 import { useForm } from '@tanstack/react-form'
-// import ky from 'ky'
+import ky from 'ky'
 import { Loader2Icon } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
@@ -13,11 +13,13 @@ import { LoadingIndicator } from '@/components/loading-indicator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { exampleImages } from '@/lib/example-images'
+import { toastError } from '@/lib/notifications'
 import { cn } from '@/lib/utils'
-import ExampleHero from '@/public/examples/hero.jpg'
 
 export function GenerateForm() {
-  const [generatedImage] = useState<GeneratedImageWorkflow | null>(null)
+  const [generatedImageWorkflow, setGeneratedImageWorkflow] =
+    useState<GeneratedImageWorkflow>(exampleImages[0]!)
   const [status, setStatus] = useState<
     'idle' | 'loading' | 'success' | 'error'
   >('idle')
@@ -25,12 +27,15 @@ export function GenerateForm() {
   const form = useForm({
     defaultValues: {
       githubUsername: ''
+      // prompt: generatedImageWorkflow.prompt
     },
     validators: {
       onChange: z.object({
         githubUsername: z
           .string()
           .refine((githubUsername) => /[a-zA-Z0-8]\w+/.test(githubUsername))
+
+        // prompt: z.string().nonempty()
       })
     },
     onSubmit: async ({
@@ -42,23 +47,21 @@ export function GenerateForm() {
         setStatus('loading')
 
         console.log('generating image for github username', githubUsername)
-        // TODO
-        // const res = await ky
-        //   .post('/api/generate', {
-        //     json: {
-        //       githubUsername
-        //     }
-        //   })
-        //   .json<GeneratedImageWorkflow>()
+        const res = await ky
+          .post('/api/generate', {
+            json: {
+              githubUsername
+            },
+            timeout: 60_000
+          })
+          .json<GeneratedImageWorkflow>()
 
-        // setGeneratedImage(res)
-        // setStatus('success')
+        setGeneratedImageWorkflow(res)
+        setStatus('success')
       } catch (err: any) {
-        console.error(
-          'error generating image for github username',
-          githubUsername,
-          err
-        )
+        void toastError(err, {
+          label: `Error generating image for @${githubUsername}`
+        })
         setStatus('error')
         return
       }
@@ -117,34 +120,28 @@ export function GenerateForm() {
         </form>
       </Card>
 
-      <img src='/down-arrow.svg' alt='Down Arrow' className='w-5 ' />
+      <img
+        src='/down-arrow.svg'
+        alt='Down Arrow'
+        className='w-5 pointer-events-none'
+      />
 
-      <div className='relative group flex flex-col gap-4 w-full max-w-4xl'>
+      <div className='relative group flex flex-col gap-4 w-full max-w-4xl pointer-events-none'>
+        <Image
+          src={generatedImageWorkflow.images.at(-1)!.imageUrl}
+          alt={
+            generatedImageWorkflow.images.at(-1)!.altText ??
+            `Generated billboard image for @${generatedImageWorkflow.githubUsername}`
+          }
+          width={generatedImageWorkflow.images.at(-1)!.width}
+          height={generatedImageWorkflow.images.at(-1)!.height}
+          className='rounded-sm shadow-sm w-full'
+        />
+
         {status === 'loading' && (
-          <LoadingIndicator className='absolute top-0 left-0 w-full h-full' />
-        )}
-
-        {generatedImage ? (
-          <Image
-            src={generatedImage.imageUrl}
-            alt={
-              generatedImage.altText ??
-              `Generated billboard image for @${generatedImage.githubUsername}`
-            }
-            width={generatedImage.width}
-            height={generatedImage.height}
-            className='rounded-sm shadow-sm w-full'
-          />
-        ) : (
-          <Image
-            src={ExampleHero.src}
-            alt='Example output billboard image for @transitive-bullshit'
-            placeholder='blur'
-            width={ExampleHero.width}
-            height={ExampleHero.height}
-            blurDataURL={ExampleHero.blurDataURL}
-            className='rounded-sm shadow-sm w-full'
-          />
+          <div className='absolute top-0 left-0 right-0 bottom-0 bg-background/70 pointer-events-none'>
+            <LoadingIndicator />
+          </div>
         )}
       </div>
     </div>

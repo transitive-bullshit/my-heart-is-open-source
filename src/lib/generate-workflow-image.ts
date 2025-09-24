@@ -21,15 +21,20 @@ const defaultFinalPrompt = `
 place this billboard naturally next to a curved highway outside of a large city at dusk with blurred time-lapse traffic. the focus of the scene is the billboard.
 `.trim()
 
+export interface GenerateImageWorkflowOptions {
+  githubUsername: string
+  template?: GeneratedImageTemplate
+  prompt?: string
+}
+
+// TODO: cache intermediate passes
+// TODO: final pass converting PNG to JPEG
+
 export async function generateWorkflowImage({
   githubUsername,
   template = 'billboard',
   prompt = defaultFinalPrompt
-}: {
-  githubUsername: string
-  template?: GeneratedImageTemplate
-  prompt?: string
-}): Promise<GeneratedImageWorkflow> {
+}: GenerateImageWorkflowOptions): Promise<GeneratedImageWorkflow> {
   console.log('generating workflow image for github user', githubUsername)
   const generatedImageWorkflow: GeneratedImageWorkflow = {
     id: nanoid(),
@@ -40,15 +45,17 @@ export async function generateWorkflowImage({
   }
 
   // TODO: cache this heavily
+  console.log('>>> taking GH screenshot', githubUsername)
   const screenshot = await getElementScreenshot({
     url: `https://github.com/${githubUsername}`,
     selector: '.js-calendar-graph > div',
-    format: 'jpg'
+    format: 'png'
   })
+  console.log('<< taking GH screenshot', githubUsername)
   const imageSize = imageDimensionsFromData(screenshot)!
   assert.ok(imageSize?.width > 0 && imageSize?.height > 0, 'Invalid image size')
 
-  const contentType = 'image/jpeg'
+  const contentType = 'image/png'
   const screenshotUrl = `data:${contentType};base64,${screenshot.toString('base64')}`
 
   const githubContributionGraphImage: GeneratedImage = {
@@ -62,7 +69,13 @@ export async function generateWorkflowImage({
   }
   generatedImageWorkflow.images.push(githubContributionGraphImage)
 
+  console.log('>>> first image pass', githubUsername)
   await generateWorkflowImageFirstPass(generatedImageWorkflow)
+  console.log('<<< first image pass', githubUsername)
+
+  console.log('>>> second image pass', githubUsername)
+  await generateWorkflowImageSecondPass(generatedImageWorkflow)
+  console.log('<<< second image pass', githubUsername)
 
   return generatedImageWorkflow
 }
@@ -125,7 +138,7 @@ export async function generateWorkflowImageFirstPass(
   }
 }
 
-export async function generateWorkflowImageFinalPass(
+export async function generateWorkflowImageSecondPass(
   generatedImageWorkflow: GeneratedImageWorkflow
 ) {
   const completion = await openai.chat.completions.create({

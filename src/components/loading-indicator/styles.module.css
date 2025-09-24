@@ -1,4 +1,4 @@
-.loading {
+.loadingContainer {
   position: relative;
   pointer-events: none;
   display: flex;

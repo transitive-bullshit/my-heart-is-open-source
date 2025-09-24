@@ -18,12 +18,14 @@ export function LoadingIndicator({ className }: { className?: string }) {
   const { resolvedTheme } = useTheme()
 
   return (
-    <Lottie
-      play
-      loop
-      animationData={resolvedTheme === 'dark' ? loadingDark : loadingLight}
-      className={cn(styles.loadingAnimation, className)}
-    />
+    <div className={cn(styles.loadingContainer, className)}>
+      <Lottie
+        play
+        loop
+        animationData={resolvedTheme === 'dark' ? loadingDark : loadingLight}
+        className={styles.loadingAnimation}
+      />
+    </div>
 
     // <AnimatePresence>
     //   {isLoading ? (
