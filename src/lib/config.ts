@@ -5,7 +5,8 @@ export const isSafari =
 
 export const title = 'My Heart is Open Source'
 export const description = 'TODO'
-export const domain = 'myheartisopensource.com'
+// export const domain = 'myheartisopensource.com'
+export const domain = 'my-heart-is-open-source.vercel.app'
 
 export const author = 'Travis Fischer'
 export const authorTwitterUsername = 'transitive_bs'
