@@ -1,8 +1,7 @@
 import { OpenAI } from 'openai'
 
-import { env } from '../env'
-
 export const openai = new OpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: env.OPENROUTER_API_KEY
+  // eslint-disable-next-line no-process-env
+  apiKey: process.env.OPENROUTER_API_KEY
 })

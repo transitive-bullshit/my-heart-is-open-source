@@ -10,11 +10,13 @@
     "baseUrl": ".",
     "paths": {
       "@/public/*": ["public/*"],
+      "@/convex/*": ["convex/*"],
       "@/*": ["src/*"]
     }
   },
   "include": [
     "src",
+    "convex/*.ts",
     "*.config.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts",

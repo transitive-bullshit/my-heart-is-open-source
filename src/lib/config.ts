@@ -5,9 +5,7 @@ export const isSafari =
 
 export const title = 'My Heart is Open Source'
 export const description = 'TODO'
-export const domain =
-  process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ??
-  'myheartisopensource.com'
+export const domain = 'myheartisopensource.com'
 
 export const author = 'Travis Fischer'
 export const authorTwitterUsername = 'transitive_bs'
@@ -32,6 +30,4 @@ export const prodUrl = `https://${domain}`
 export const baseUrl = isDev ? `http://localhost:${port}` : prodUrl
 export const vercelUrl =
   process.env.VERCEL_URL ?? process.env.NEXT_PUBLIC_VERCEL_URL
-// export const webBaseUrl = isDev || !vercelUrl ? baseUrl : `https://${vercelUrl}`
-export const apiBaseUrl = process.env.NEXT_PUBLIC_AGENTIC_API_BASE_URL!
-export const gatewayBaseUrl = process.env.NEXT_PUBLIC_AGENTIC_GATEWAY_BASE_URL!
+export const apiBaseUrl = baseUrl

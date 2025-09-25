@@ -1,3 +1,4 @@
+import type { Id } from '@/convex/_generated/dataModel'
 import Example0 from '@/public/examples/0.jpg'
 import Example1 from '@/public/examples/1.jpg'
 import Example2 from '@/public/examples/2.jpg'
@@ -20,7 +21,7 @@ import Example18 from '@/public/examples/18.jpg'
 import ExampleHero from '@/public/examples/hero.jpg'
 import ExampleMoon from '@/public/examples/moon.jpg'
 
-import type { GeneratedImage, GeneratedImageWorkflow } from './types'
+import type { GeneratedImage, Generation } from './types'
 
 const images = [
   {
@@ -152,7 +153,7 @@ const images = [
   }
 ] as const
 
-export const exampleImages: GeneratedImageWorkflow[] = images.map(
+export const exampleImages: Generation[] = images.map(
   ({ image, template, prompt }, index) => {
     const generatedImage: GeneratedImage = {
       imageUrl: image.src,
@@ -161,12 +162,12 @@ export const exampleImages: GeneratedImageWorkflow[] = images.map(
       blurDataUrl: image.blurDataURL,
       contentType: 'image/jpeg',
       type: 'final',
-      createdAt: new Date().toISOString(),
       altText: `Example billboard image for @transitive-bullshit`
     }
 
     return {
-      id: `example-${index}`,
+      _id: `example-${index}` as Id<'generations'>,
+      _creationTime: 0,
       githubUsername: 'transitive-bullshit',
       template,
       prompt,

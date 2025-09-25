@@ -1,28 +1,49 @@
 'use client'
 
+import type { WorkflowId } from '@convex-dev/workflow'
 import { useForm } from '@tanstack/react-form'
-import ky from 'ky'
+import { useMutation, useQuery } from 'convex/react'
 import { Loader2Icon } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 import * as z from 'zod'
 
-import type { GeneratedImageWorkflow } from '@/lib/types'
+import type { Id } from '@/convex/_generated/dataModel'
 import { Card } from '@/components/card'
 import { LoadingIndicator } from '@/components/loading-indicator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { api } from '@/convex/_generated/api'
 import { exampleImages } from '@/lib/example-images'
 import { toastError } from '@/lib/notifications'
 import { cn } from '@/lib/utils'
 
 export function GenerateForm() {
-  const [generatedImageWorkflow, setGeneratedImageWorkflow] =
-    useState<GeneratedImageWorkflow>(exampleImages[0]!)
-  const [status, setStatus] = useState<
-    'idle' | 'loading' | 'success' | 'error'
-  >('idle')
+  const [generationId, setGenerationId] = useState<Id<'generations'> | null>(
+    null
+  )
+  const [generationWorkflowId, setGenerationWorkflowId] =
+    useState<WorkflowId | null>(null)
+  const createGenerationWorkflow = useMutation(
+    api.generationWorkflows.createGenerationWorkflow
+  )
+  const generation = useQuery(
+    api.generationWorkflows.getGeneration,
+    generationId
+      ? {
+          generationId
+        }
+      : 'skip'
+  )
+  const generationWorkflow = useQuery(
+    api.generationWorkflows.getGenerationWorkflow,
+    generationWorkflowId
+      ? {
+          generationWorkflowId
+        }
+      : 'skip'
+  )
 
   const form = useForm({
     defaultValues: {
@@ -44,29 +65,23 @@ export function GenerateForm() {
       value: { githubUsername: string }
     }) => {
       try {
-        setStatus('loading')
-
         console.log('generating image for github username', githubUsername)
-        const res = await ky
-          .post('/api/generate', {
-            json: {
-              githubUsername
-            },
-            timeout: 60_000
-          })
-          .json<GeneratedImageWorkflow>()
-
-        setGeneratedImageWorkflow(res)
-        setStatus('success')
+        const { generationId, generationWorkflowId } =
+          await createGenerationWorkflow({ githubUsername })
+        setGenerationId(generationId)
+        setGenerationWorkflowId(generationWorkflowId)
       } catch (err: any) {
         void toastError(err, {
           label: `Error generating image for @${githubUsername}`
         })
-        setStatus('error')
         return
       }
     }
   })
+
+  // TODO: use last selected example image
+  const currentGeneration = generation || exampleImages[0]!
+  const currentGenerationImage = currentGeneration.images.at(-1)!
 
   return (
     <div className='flex flex-col gap-4 items-center'>
@@ -128,17 +143,19 @@ export function GenerateForm() {
 
       <div className='relative group flex flex-col gap-4 w-full max-w-4xl pointer-events-none'>
         <Image
-          src={generatedImageWorkflow.images.at(-1)!.imageUrl}
+          src={currentGenerationImage.imageUrl}
           alt={
-            generatedImageWorkflow.images.at(-1)!.altText ??
-            `Generated billboard image for @${generatedImageWorkflow.githubUsername}`
+            currentGenerationImage.altText ||
+            `Generated billboard image for @${currentGeneration.githubUsername}`
           }
-          width={generatedImageWorkflow.images.at(-1)!.width}
-          height={generatedImageWorkflow.images.at(-1)!.height}
+          width={currentGenerationImage.width}
+          height={currentGenerationImage.height}
+          placeholder='blur'
+          blurDataURL={currentGenerationImage.blurDataUrl}
           className='rounded-sm shadow-sm w-full'
         />
 
-        {status === 'loading' && (
+        {generationWorkflow?.type === 'inProgress' && (
           <div className='absolute top-0 left-0 right-0 bottom-0 bg-background/70 pointer-events-none'>
             <LoadingIndicator />
           </div>
