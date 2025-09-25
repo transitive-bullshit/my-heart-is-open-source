@@ -89,3 +89,26 @@ export function getEnv(name: string): string | undefined {
     return undefined
   }
 }
+
+export function uint8ArrayToBase64(bytes: Uint8Array): string {
+  let binary = ''
+
+  for (let i = 0; i < bytes.byteLength; i++) {
+    // eslint-disable-next-line unicorn/prefer-code-point
+    binary += String.fromCharCode(bytes[i]!)
+  }
+
+  return btoa(binary)
+}
+
+export function base64ToUint8Array(base64: string): Uint8Array {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+
+  for (let i = 0; i < binary.length; i++) {
+    // eslint-disable-next-line unicorn/prefer-code-point
+    bytes[i] = binary.charCodeAt(i)
+  }
+
+  return bytes
+}

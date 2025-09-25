@@ -11,7 +11,7 @@ import ky from 'ky'
 import { apiBaseUrl } from '@/lib/config'
 import { openai } from '@/lib/services/openai'
 import { templates } from '@/lib/templates'
-import { assert } from '@/lib/utils'
+import { assert, base64ToUint8Array, uint8ArrayToBase64 } from '@/lib/utils'
 
 import type { Id } from './_generated/dataModel'
 import type { Generation } from './types'
@@ -145,7 +145,7 @@ export const generateGithubContributionGraphImage = internalAction({
     assert(imageSize?.width > 0 && imageSize?.height > 0, 'Invalid image size')
 
     const contentType = 'image/png'
-    const screenshotUrl = `data:${contentType};base64,${Buffer.from(screenshot).toString('base64')}`
+    const screenshotUrl = `data:${contentType};base64,${uint8ArrayToBase64(image)}`
     console.log('<<< taking GH screenshot', githubUsername)
 
     await ctx.runMutation(internal.workflows.addGenerationImage, {
@@ -209,7 +209,8 @@ export const generateFirstPassImage = internalAction({
     const contentType = imageParts[0]?.includes('image/png')
       ? 'image/png'
       : 'image/jpeg'
-    const imageData = Buffer.from(imageUrl!.split(',')[1]!, 'base64')
+    // const imageData = Buffer.from(imageUrl!.split(',')[1]!, 'base64')
+    const imageData = base64ToUint8Array(imageUrl!.split(',')[1]!)
     const imageSize = imageDimensionsFromData(imageData)!
     assert(imageSize.width > 0 && imageSize.height > 0, 'Invalid image size')
     console.log('<<< generating first pass image', {
@@ -277,7 +278,8 @@ export const generateSecondPassImage = internalAction({
     const contentType = imageParts[0]?.includes('image/png')
       ? 'image/png'
       : 'image/jpeg'
-    const imageData = Buffer.from(imageUrl!.split(',')[1]!, 'base64')
+    // const imageData = Buffer.from(imageUrl!.split(',')[1]!, 'base64')
+    const imageData = base64ToUint8Array(imageUrl!.split(',')[1]!)
     const imageSize = imageDimensionsFromData(imageData)!
     assert(imageSize.width > 0 && imageSize.height > 0, 'Invalid image size')
 
