@@ -30,6 +30,8 @@ const createGenerationWorkflowArgs = {
   prompt: v.optional(v.string())
 }
 
+const model = 'google/gemini-2.5-flash-image-preview'
+
 export const defaultFinalPrompt = `
 place this billboard naturally next to a curved highway outside of a large city at dusk with blurred time-lapse traffic. the focus of the scene is the billboard.
 `.trim()
@@ -114,8 +116,6 @@ export const addGenerationImage = internalMutation({
     })
   }
 })
-
-const model = 'google/gemini-2.5-flash-image-preview'
 
 export const generateGithubContributionGraphImage = internalAction({
   args: { generationId: v.id('generations') },
