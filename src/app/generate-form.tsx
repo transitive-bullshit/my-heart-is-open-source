@@ -5,7 +5,7 @@ import { useForm } from '@tanstack/react-form'
 import { useMutation, useQuery } from 'convex/react'
 import { Loader2Icon } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as z from 'zod'
 
 import type { Id } from '@/convex/_generated/dataModel'
@@ -14,15 +14,21 @@ import { LoadingIndicator } from '@/components/loading-indicator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { api } from '@/convex/_generated/api'
 import { exampleImages } from '@/lib/example-images'
 import { toastError } from '@/lib/notifications'
 import { cn } from '@/lib/utils'
 
-export function GenerateForm() {
+export function GenerateForm({
+  selectedExampleId = 'example-0'
+}: {
+  selectedExampleId?: string
+}) {
   const [generationId, setGenerationId] = useState<Id<'generations'> | null>(
     null
   )
+  const [isLoading, setIsLoading] = useState(false)
   const [generationWorkflowId, setGenerationWorkflowId] =
     useState<WorkflowId | null>(null)
   const createGenerationWorkflow = useMutation(
@@ -47,27 +53,31 @@ export function GenerateForm() {
 
   const form = useForm({
     defaultValues: {
-      githubUsername: ''
-      // prompt: generatedImageWorkflow.prompt
+      githubUsername: 'transitive-bullshit',
+      prompt: ''
     },
     validators: {
       onChange: z.object({
         githubUsername: z
           .string()
-          .refine((githubUsername) => /[a-zA-Z0-8]\w+/.test(githubUsername))
+          .refine((githubUsername) => /[a-zA-Z0-8]\w+/.test(githubUsername)),
 
-        // prompt: z.string().nonempty()
+        prompt: z.string().nonempty()
       })
     },
     onSubmit: async ({
-      value: { githubUsername }
+      value: { githubUsername, prompt }
     }: {
-      value: { githubUsername: string }
+      value: { githubUsername: string; prompt: string }
     }) => {
       try {
         console.log('generating image for github username', githubUsername)
+        setIsLoading(true)
         const { generationId, generationWorkflowId } =
-          await createGenerationWorkflow({ githubUsername })
+          await createGenerationWorkflow({
+            githubUsername,
+            prompt
+          })
         setGenerationId(generationId)
         setGenerationWorkflowId(generationWorkflowId)
       } catch (err: any) {
@@ -79,11 +89,42 @@ export function GenerateForm() {
     }
   })
 
+  useEffect(() => {
+    if (
+      isLoading &&
+      (!generationWorkflow ||
+        (generationWorkflow?.type !== 'inProgress' &&
+          generation?.images.at(-1)?.type === 'final'))
+    ) {
+      setIsLoading(false)
+    }
+  }, [isLoading, generationWorkflow, generation])
+
+  useEffect(() => {
+    if (selectedExampleId) {
+      const example = exampleImages.find((e) => e._id === selectedExampleId)
+      if (example) {
+        setGenerationId(null)
+        setGenerationWorkflowId(null)
+        form.setFieldValue('prompt', example.prompt)
+      }
+    }
+  }, [selectedExampleId, form])
+
   // TODO: use last selected example image
   const currentGeneration = generation?.images.length
     ? generation
-    : exampleImages[0]!
+    : (exampleImages.find((e) => e._id === selectedExampleId) ??
+      exampleImages[0]!)
   const currentGenerationImage = currentGeneration.images.at(-1)!
+
+  console.log('currentGeneration', {
+    currentGeneration,
+    generation,
+    selectedExampleId,
+    isLoading,
+    currentGenerationImage
+  })
 
   return (
     <div className='flex flex-col gap-4 items-center'>
@@ -116,6 +157,26 @@ export function GenerateForm() {
             )}
           />
 
+          <form.Field
+            name='prompt'
+            children={(field) => (
+              <div className='grid gap-3'>
+                <Label htmlFor={field.name}>Prompt</Label>
+
+                <Textarea
+                  id={field.name}
+                  name={field.name}
+                  required
+                  placeholder='Place this billboard into a vibrant city from a studio ghibli animated film'
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e: any) => field.handleChange(e.target.value)}
+                  className='min-h-24'
+                />
+              </div>
+            )}
+          />
+
           <form.Subscribe
             selector={(state) => [
               state.canSubmit,
@@ -128,7 +189,9 @@ export function GenerateForm() {
                 disabled={!(isTouched && canSubmit)}
                 className='w-full'
               >
-                {isSubmitting && <Loader2Icon className='animate-spin' />}
+                {(isSubmitting || isLoading) && (
+                  <Loader2Icon className='animate-spin' />
+                )}
 
                 <span>Generate image</span>
               </Button>
@@ -144,24 +207,26 @@ export function GenerateForm() {
       />
 
       <div className='relative group flex flex-col gap-4 w-full max-w-4xl pointer-events-none'>
-        <Image
-          src={currentGenerationImage.imageUrl}
-          alt={
-            currentGenerationImage.altText ||
-            `Generated billboard image for @${currentGeneration.githubUsername}`
-          }
-          width={currentGenerationImage.width}
-          height={currentGenerationImage.height}
-          placeholder={currentGenerationImage.blurDataUrl ? 'blur' : 'empty'}
-          blurDataURL={currentGenerationImage.blurDataUrl}
-          className='rounded-sm shadow-sm w-full'
-        />
+        <Card className='bg-card overflow-hidden'>
+          <Image
+            src={currentGenerationImage.imageUrl}
+            alt={
+              currentGenerationImage.altText ||
+              `Generated billboard image for @${currentGeneration.githubUsername}`
+            }
+            width={currentGenerationImage.width}
+            height={currentGenerationImage.height}
+            placeholder={currentGenerationImage.blurDataUrl ? 'blur' : 'empty'}
+            blurDataURL={currentGenerationImage.blurDataUrl}
+            className='rounded-3xl w-full'
+          />
 
-        {generationWorkflow?.type === 'inProgress' && (
-          <div className='absolute top-0 left-0 right-0 bottom-0 bg-background/70 pointer-events-none'>
-            <LoadingIndicator />
-          </div>
-        )}
+          {(isLoading || generationWorkflow?.type === 'inProgress') && (
+            <div className='absolute top-0 left-0 right-0 bottom-0 bg-background/70 pointer-events-none rounded-3xl'>
+              <LoadingIndicator />
+            </div>
+          )}
+        </Card>
       </div>
     </div>
   )
