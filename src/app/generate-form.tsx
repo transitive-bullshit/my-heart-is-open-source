@@ -92,9 +92,8 @@ export function GenerateForm({
   useEffect(() => {
     if (
       isLoading &&
-      (!generationWorkflow ||
-        (generationWorkflow?.type !== 'inProgress' &&
-          generation?.images.at(-1)?.type === 'final'))
+      generationWorkflow?.type !== 'inProgress' &&
+      generation?.images.at(-1)?.type === 'final'
     ) {
       setIsLoading(false)
     }
