@@ -152,7 +152,7 @@ export function GenerateForm() {
           }
           width={currentGenerationImage.width}
           height={currentGenerationImage.height}
-          placeholder='blur'
+          placeholder={currentGenerationImage.blurDataUrl ? 'blur' : 'empty'}
           blurDataURL={currentGenerationImage.blurDataUrl}
           className='rounded-sm shadow-sm w-full'
         />

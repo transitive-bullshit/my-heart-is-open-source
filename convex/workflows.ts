@@ -11,7 +11,7 @@ import ky from 'ky'
 import { apiBaseUrl } from '@/lib/config'
 import { openai } from '@/lib/services/openai'
 import { templates } from '@/lib/templates'
-import { assert, base64ToUint8Array, uint8ArrayToBase64 } from '@/lib/utils'
+import { assert, base64ToUint8Array } from '@/lib/utils'
 
 import type { Id } from './_generated/dataModel'
 import type { Generation } from './types'
@@ -130,7 +130,7 @@ export const generateGithubContributionGraphImage = internalAction({
 
     const { githubUsername } = generation
 
-    console.log('>>> taking GH screenshot', githubUsername)
+    console.log('>>> taking GH screenshot', { githubUsername })
     const screenshot = await ky
       .get('api/screenshot', {
         prefixUrl: apiBaseUrl,
@@ -144,14 +144,18 @@ export const generateGithubContributionGraphImage = internalAction({
     const imageSize = imageDimensionsFromData(image)!
     assert(imageSize?.width > 0 && imageSize?.height > 0, 'Invalid image size')
 
+    const storageId = await ctx.storage.store(new Blob([image]))
+    assert(storageId)
+    const imageUrl = await ctx.storage.getUrl(storageId)
+    assert(imageUrl)
     const contentType = 'image/png'
-    const screenshotUrl = `data:${contentType};base64,${uint8ArrayToBase64(image)}`
-    console.log('<<< taking GH screenshot', githubUsername)
+    // const screenshotUrl = `data:${contentType};base64,${uint8ArrayToBase64(image)}`
+    console.log('<<< taking GH screenshot', { githubUsername, imageUrl })
 
     await ctx.runMutation(internal.workflows.addGenerationImage, {
       generationId,
       image: {
-        imageUrl: screenshotUrl,
+        imageUrl,
         width: imageSize.width,
         height: imageSize.height,
         contentType,
@@ -201,22 +205,30 @@ export const generateFirstPassImage = internalAction({
       ]
     })
 
-    const imageUrl: string | undefined = (completion.choices[0]!.message as any)
-      .images?.[0]?.image_url?.url
-    assert(imageUrl, 'No image URL returned from first-pass')
+    const imageDataUrl: string | undefined = (
+      completion.choices[0]!.message as any
+    ).images?.[0]?.image_url?.url
+    assert(imageDataUrl, 'No image URL returned from first-pass')
 
-    const imageParts = imageUrl!.split(',')
+    const imageParts = imageDataUrl!.split(',')
     const contentType = imageParts[0]?.includes('image/png')
       ? 'image/png'
       : 'image/jpeg'
-    // const imageData = Buffer.from(imageUrl!.split(',')[1]!, 'base64')
-    const imageData = base64ToUint8Array(imageUrl!.split(',')[1]!)
+    // const imageData = Buffer.from(imageDataUrl!.split(',')[1]!, 'base64')
+    const imageData = base64ToUint8Array(imageDataUrl!.split(',')[1]!)
     const imageSize = imageDimensionsFromData(imageData)!
     assert(imageSize.width > 0 && imageSize.height > 0, 'Invalid image size')
+
+    const storageId = await ctx.storage.store(new Blob([imageData]))
+    assert(storageId)
+    const imageUrl = await ctx.storage.getUrl(storageId)
+    assert(imageUrl)
+
     console.log('<<< generating first pass image', {
       generationId,
       githubUsername: generation.githubUsername,
-      prompt
+      prompt,
+      imageUrl
     })
 
     await ctx.runMutation(internal.workflows.addGenerationImage, {
@@ -270,23 +282,30 @@ export const generateSecondPassImage = internalAction({
       ]
     })
 
-    const imageUrl: string | undefined = (completion.choices[0]!.message as any)
-      .images?.[0]?.image_url?.url
-    assert(imageUrl, 'No image URL returned from first-pass')
+    const imageDataUrl: string | undefined = (
+      completion.choices[0]!.message as any
+    ).images?.[0]?.image_url?.url
+    assert(imageDataUrl, 'No image URL returned from first-pass')
 
-    const imageParts = imageUrl!.split(',')
+    const imageParts = imageDataUrl!.split(',')
     const contentType = imageParts[0]?.includes('image/png')
       ? 'image/png'
       : 'image/jpeg'
-    // const imageData = Buffer.from(imageUrl!.split(',')[1]!, 'base64')
-    const imageData = base64ToUint8Array(imageUrl!.split(',')[1]!)
+    // const imageData = Buffer.from(imageDataUrl!.split(',')[1]!, 'base64')
+    const imageData = base64ToUint8Array(imageDataUrl!.split(',')[1]!)
     const imageSize = imageDimensionsFromData(imageData)!
     assert(imageSize.width > 0 && imageSize.height > 0, 'Invalid image size')
+
+    const storageId = await ctx.storage.store(new Blob([imageData]))
+    assert(storageId)
+    const imageUrl = await ctx.storage.getUrl(storageId)
+    assert(imageUrl)
 
     console.log('<<< generating second pass image', {
       generationId,
       githubUsername: generation.githubUsername,
-      prompt: generation.prompt
+      prompt: generation.prompt,
+      imageUrl
     })
 
     await ctx.runMutation(internal.workflows.addGenerationImage, {
