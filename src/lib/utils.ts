@@ -1,6 +1,6 @@
+import type * as z from 'zod'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { type z, type ZodType } from 'zod'
 
 import { HttpError, ZodValidationError } from './errors'
 
@@ -38,7 +38,7 @@ export function assert(
  * Parses the given input against the given Zod schema, throwing a
  * `ZodValidationError` if the input is invalid.
  */
-export function parseZodSchema<TSchema extends ZodType<any, any, any>>(
+export function parseZodSchema<TSchema extends z.ZodType<any, any, any>>(
   schema: TSchema,
   input: unknown,
   {
