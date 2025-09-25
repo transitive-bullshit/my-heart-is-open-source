@@ -53,7 +53,7 @@ export const createGenerationWorkflow = mutation({
 
     const generationWorkflowId = await workflow.start(
       ctx,
-      internal.generationWorkflows.generationWorkflow,
+      internal.workflows.generationWorkflow,
       { generationId }
     )
 
@@ -67,17 +67,17 @@ export const generationWorkflow = workflow.define({
   args: { generationId: v.id('generations') },
   handler: async (step, { generationId }): Promise<void> => {
     await step.runAction(
-      internal.generationWorkflows.generateGithubContributionGraphImage,
+      internal.workflows.generateGithubContributionGraphImage,
       {
         generationId
       }
     )
 
-    await step.runAction(internal.generationWorkflows.generateFirstPassImage, {
+    await step.runAction(internal.workflows.generateFirstPassImage, {
       generationId
     })
 
-    await step.runAction(internal.generationWorkflows.generateSecondPassImage, {
+    await step.runAction(internal.workflows.generateSecondPassImage, {
       generationId
     })
   }
@@ -120,10 +120,9 @@ const model = 'google/gemini-2.5-flash-image-preview'
 export const generateGithubContributionGraphImage = internalAction({
   args: { generationId: v.id('generations') },
   handler: async (ctx, { generationId }): Promise<void> => {
-    const generation = await ctx.runQuery(
-      api.generationWorkflows.getGeneration,
-      { generationId }
-    )
+    const generation = await ctx.runQuery(api.workflows.getGeneration, {
+      generationId
+    })
 
     if (!generation) {
       throw new Error(`Generation not found ${generationId}`)
@@ -149,7 +148,7 @@ export const generateGithubContributionGraphImage = internalAction({
     const screenshotUrl = `data:${contentType};base64,${Buffer.from(screenshot).toString('base64')}`
     console.log('<<< taking GH screenshot', githubUsername)
 
-    await ctx.runMutation(internal.generationWorkflows.addGenerationImage, {
+    await ctx.runMutation(internal.workflows.addGenerationImage, {
       generationId,
       image: {
         imageUrl: screenshotUrl,
@@ -166,10 +165,9 @@ export const generateGithubContributionGraphImage = internalAction({
 export const generateFirstPassImage = internalAction({
   args: { generationId: v.id('generations') },
   handler: async (ctx, { generationId }): Promise<void> => {
-    const generation = await ctx.runQuery(
-      api.generationWorkflows.getGeneration,
-      { generationId }
-    )
+    const generation = await ctx.runQuery(api.workflows.getGeneration, {
+      generationId
+    })
 
     if (!generation) {
       throw new Error(`Generation not found ${generationId}`)
@@ -220,7 +218,7 @@ export const generateFirstPassImage = internalAction({
       prompt
     })
 
-    await ctx.runMutation(internal.generationWorkflows.addGenerationImage, {
+    await ctx.runMutation(internal.workflows.addGenerationImage, {
       generationId,
       image: {
         imageUrl,
@@ -236,10 +234,9 @@ export const generateFirstPassImage = internalAction({
 export const generateSecondPassImage = internalAction({
   args: { generationId: v.id('generations') },
   handler: async (ctx, { generationId }): Promise<void> => {
-    const generation = await ctx.runQuery(
-      api.generationWorkflows.getGeneration,
-      { generationId }
-    )
+    const generation = await ctx.runQuery(api.workflows.getGeneration, {
+      generationId
+    })
 
     if (!generation) {
       throw new Error(`Generation not found ${generationId}`)
@@ -290,7 +287,7 @@ export const generateSecondPassImage = internalAction({
       prompt: generation.prompt
     })
 
-    await ctx.runMutation(internal.generationWorkflows.addGenerationImage, {
+    await ctx.runMutation(internal.workflows.addGenerationImage, {
       generationId,
       image: {
         imageUrl,

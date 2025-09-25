@@ -108,7 +108,6 @@ function Scene() {
   const gridSize = 150
 
   const getThemeColors = () => {
-    console.log({ theme })
     switch (theme) {
       case 'dark':
         return {

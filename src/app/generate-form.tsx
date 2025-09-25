@@ -26,10 +26,10 @@ export function GenerateForm() {
   const [generationWorkflowId, setGenerationWorkflowId] =
     useState<WorkflowId | null>(null)
   const createGenerationWorkflow = useMutation(
-    api.generationWorkflows.createGenerationWorkflow
+    api.workflows.createGenerationWorkflow
   )
   const generation = useQuery(
-    api.generationWorkflows.getGeneration,
+    api.workflows.getGeneration,
     generationId
       ? {
           generationId
@@ -37,7 +37,7 @@ export function GenerateForm() {
       : 'skip'
   )
   const generationWorkflow = useQuery(
-    api.generationWorkflows.getGenerationWorkflow,
+    api.workflows.getGenerationWorkflow,
     generationWorkflowId
       ? {
           generationWorkflowId
@@ -80,7 +80,9 @@ export function GenerateForm() {
   })
 
   // TODO: use last selected example image
-  const currentGeneration = generation || exampleImages[0]!
+  const currentGeneration = generation?.images.length
+    ? generation
+    : exampleImages[0]!
   const currentGenerationImage = currentGeneration.images.at(-1)!
 
   return (
