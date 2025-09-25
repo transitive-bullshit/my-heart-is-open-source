@@ -16,8 +16,7 @@ export const twitterUrl = `https://x.com/${authorTwitterUsername}`
 export const githubUrl =
   'https://github.com/transitive-bullshit/my-heart-is-open-source'
 
-export const env =
-  process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV ?? 'development'
+export const env = process.env.ENVIRONMENT ?? 'development'
 export const isVercel = !!(
   process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.VERCEL
 )
