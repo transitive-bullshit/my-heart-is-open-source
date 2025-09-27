@@ -14,11 +14,19 @@ const Lottie = dynamic(() => import('react-lottie-player'), {
   ssr: false
 })
 
-export function LoadingIndicator({ className }: { className?: string }) {
+export function LoadingIndicator({
+  className,
+  fill
+}: {
+  className?: string
+  fill?: boolean
+}) {
   const { resolvedTheme } = useTheme()
 
   return (
-    <div className={cn(styles.loadingContainer, className)}>
+    <div
+      className={cn(styles.loadingContainer, fill && styles.fill, className)}
+    >
       <Lottie
         play
         loop

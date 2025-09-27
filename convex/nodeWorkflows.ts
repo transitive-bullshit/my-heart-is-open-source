@@ -1,15 +1,17 @@
 'use node'
 
 import { v } from 'convex/values'
-import { imageDimensionsFromData } from 'image-dimensions'
+import sharp from 'sharp'
 
-// import ky from 'ky'
-// import { apiBaseUrl } from '@/lib/config'
 import { getElementScreenshot } from '@/lib/get-element-screenshot'
-import { assert } from '@/lib/utils'
+import { openai } from '@/lib/services/openai'
+import { templates } from '@/lib/templates'
+import { assert, base64ToUint8Array, bufferLikeToImageBlob } from '@/lib/utils'
 
 import { api, internal } from './_generated/api'
 import { internalAction } from './_generated/server'
+
+const model = 'google/gemini-2.5-flash-image-preview'
 
 export const generateGithubContributionGraphImage = internalAction({
   args: { generationId: v.id('generations') },
@@ -39,16 +41,33 @@ export const generateGithubContributionGraphImage = internalAction({
     //     }
     //   })
     //   .arrayBuffer()
-    const image = new Uint8Array(screenshot)
+    // const image = new Uint8Array(screenshot)
+    // const contentType = 'image/png'
 
-    const imageSize = imageDimensionsFromData(image)!
-    assert(imageSize?.width > 0 && imageSize?.height > 0, 'Invalid image size')
+    const outputImage = await sharp(screenshot)
+      .jpeg({ quality: 80 })
+      .toBuffer({ resolveWithObject: true })
 
-    const storageId = await ctx.storage.store(new Blob([image]))
+    const outputContentType = 'image/jpeg'
+    // const imageSize = imageDimensionsFromData(outputImage)!
+    // assert(imageSize?.width > 0 && imageSize?.height > 0, 'Invalid image size')
+    assert(
+      outputImage.info.width > 0 && outputImage.info.height > 0,
+      'Invalid image size'
+    )
+
+    console.log('gh image', {
+      githubUsername,
+      info: outputImage.info,
+      outputContentType
+    })
+
+    const storageId = await ctx.storage.store(
+      bufferLikeToImageBlob(outputImage.data, outputContentType)
+    )
     assert(storageId)
     const imageUrl = await ctx.storage.getUrl(storageId)
     assert(imageUrl)
-    const contentType = 'image/png'
     // const screenshotUrl = `data:${contentType};base64,${uint8ArrayToBase64(image)}`
     console.log('<<< taking GH screenshot', { githubUsername, imageUrl })
 
@@ -56,11 +75,176 @@ export const generateGithubContributionGraphImage = internalAction({
       generationId,
       image: {
         imageUrl,
-        width: imageSize.width,
-        height: imageSize.height,
-        contentType,
+        width: outputImage.info.width,
+        height: outputImage.info.height,
+        contentType: outputContentType,
         type: 'github-contribution-graph',
         altText: `GitHub contribution graph for @${githubUsername}`
+      }
+    })
+  }
+})
+
+export const generateFirstPassImage = internalAction({
+  args: { generationId: v.id('generations') },
+  handler: async (ctx, { generationId }): Promise<void> => {
+    const generation = await ctx.runQuery(api.workflows.getGeneration, {
+      generationId
+    })
+
+    if (!generation) {
+      throw new Error(`Generation not found ${generationId}`)
+    }
+
+    const prompt = templates[generation.template]
+
+    console.log('>>> generating first pass image', {
+      generationId,
+      githubUsername: generation.githubUsername,
+      prompt
+    })
+    const completion = await openai.chat.completions.create({
+      model,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: prompt
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: generation.images[0]!.imageUrl
+              }
+            }
+          ]
+        }
+      ]
+    })
+
+    const imageDataUrl: string | undefined = (
+      completion.choices[0]!.message as any
+    ).images?.[0]?.image_url?.url
+    assert(imageDataUrl, 'No image URL returned from first-pass')
+
+    // const imageParts = imageDataUrl!.split(',')
+    // const contentType = imageParts[0]?.includes('image/png')
+    //   ? 'image/png'
+    //   : 'image/jpeg'
+    // const imageData = Buffer.from(imageDataUrl!.split(',')[1]!, 'base64')
+    const imageData = base64ToUint8Array(imageDataUrl!.split(',')[1]!)
+    const outputImage = await sharp(imageData)
+      .jpeg({ quality: 80 })
+      .toBuffer({ resolveWithObject: true })
+    const outputContentType = 'image/jpeg'
+
+    const storageId = await ctx.storage.store(
+      bufferLikeToImageBlob(outputImage.data, outputContentType)
+    )
+    assert(storageId)
+    const imageUrl = await ctx.storage.getUrl(storageId)
+    assert(imageUrl)
+
+    console.log('<<< generating first pass image', {
+      generationId,
+      githubUsername: generation.githubUsername,
+      prompt,
+      imageUrl,
+      contentType: outputContentType
+    })
+
+    await ctx.runMutation(internal.workflows.addGenerationImage, {
+      generationId,
+      image: {
+        imageUrl,
+        width: outputImage.info.width,
+        height: outputImage.info.height,
+        contentType: outputContentType,
+        type: 'first-pass'
+      }
+    })
+  }
+})
+
+export const generateSecondPassImage = internalAction({
+  args: { generationId: v.id('generations') },
+  handler: async (ctx, { generationId }): Promise<void> => {
+    const generation = await ctx.runQuery(api.workflows.getGeneration, {
+      generationId
+    })
+
+    if (!generation) {
+      throw new Error(`Generation not found ${generationId}`)
+    }
+
+    console.log('>>> generating second pass image', {
+      generationId,
+      githubUsername: generation.githubUsername,
+      prompt: generation.prompt
+    })
+
+    const completion = await openai.chat.completions.create({
+      model,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: generation.prompt
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: generation.images[1]!.imageUrl
+              }
+            }
+          ]
+        }
+      ]
+    })
+
+    const imageDataUrl: string | undefined = (
+      completion.choices[0]!.message as any
+    ).images?.[0]?.image_url?.url
+    assert(imageDataUrl, 'No image URL returned from first-pass')
+
+    // const imageParts = imageDataUrl!.split(',')
+    // const contentType = imageParts[0]?.includes('image/png')
+    //   ? 'image/png'
+    //   : 'image/jpeg'
+    // const imageData = Buffer.from(imageDataUrl!.split(',')[1]!, 'base64')
+    const imageData = base64ToUint8Array(imageDataUrl!.split(',')[1]!)
+    const outputImage = await sharp(imageData)
+      .jpeg({ quality: 80 })
+      .toBuffer({ resolveWithObject: true })
+    const outputContentType = 'image/jpeg'
+
+    const storageId = await ctx.storage.store(
+      bufferLikeToImageBlob(outputImage.data, outputContentType)
+    )
+    assert(storageId)
+    const imageUrl = await ctx.storage.getUrl(storageId)
+    assert(imageUrl)
+
+    console.log('<<< generating second pass image', {
+      generationId,
+      githubUsername: generation.githubUsername,
+      prompt: generation.prompt,
+      imageUrl,
+      contentType: outputContentType
+    })
+
+    await ctx.runMutation(internal.workflows.addGenerationImage, {
+      generationId,
+      image: {
+        imageUrl,
+        width: outputImage.info.width,
+        height: outputImage.info.height,
+        contentType: outputContentType,
+        type: 'final'
       }
     })
   }

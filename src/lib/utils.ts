@@ -112,3 +112,19 @@ export function base64ToUint8Array(base64: string): Uint8Array<ArrayBuffer> {
 
   return bytes
 }
+
+export function bufferLikeToImageBlob(
+  input: ArrayBuffer | ArrayBufferView,
+  contentType: 'image/png' | 'image/jpeg' = 'image/png'
+): Blob {
+  const view =
+    input instanceof ArrayBuffer
+      ? new Uint8Array(input)
+      : new Uint8Array(input.buffer, input.byteOffset, input.byteLength)
+
+  // Create a fresh ArrayBuffer to satisfy DOM typings (ArrayBuffer vs ArrayBufferLike)
+  const copy = new Uint8Array(view.byteLength)
+  copy.set(view)
+
+  return new Blob([copy.buffer as ArrayBuffer], { type: contentType })
+}

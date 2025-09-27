@@ -5,21 +5,11 @@ import {
   type WorkflowStatus
 } from '@convex-dev/workflow'
 import { v } from 'convex/values'
-import { imageDimensionsFromData } from 'image-dimensions'
-
-import { openai } from '@/lib/services/openai'
-import { templates } from '@/lib/templates'
-import { assert, base64ToUint8Array } from '@/lib/utils'
 
 import type { Id } from './_generated/dataModel'
 import type { Generation } from './types'
-import { api, components, internal } from './_generated/api'
-import {
-  internalAction,
-  internalMutation,
-  mutation,
-  query
-} from './_generated/server'
+import { components, internal } from './_generated/api'
+import { internalMutation, mutation, query } from './_generated/server'
 import { GeneratedImageSchema } from './schema'
 
 const createGenerationWorkflowArgs = {
@@ -27,8 +17,6 @@ const createGenerationWorkflowArgs = {
   template: v.optional(v.union(v.literal('billboard'))),
   prompt: v.optional(v.string())
 }
-
-const model = 'google/gemini-2.5-flash-image-preview'
 
 export const defaultFinalPrompt = `
 place this billboard naturally next to a curved highway outside of a large city at dusk with blurred time-lapse traffic. the focus of the scene is the billboard.
@@ -73,11 +61,11 @@ export const generationWorkflow = workflow.define({
       }
     )
 
-    await step.runAction(internal.workflows.generateFirstPassImage, {
+    await step.runAction(internal.nodeWorkflows.generateFirstPassImage, {
       generationId
     })
 
-    await step.runAction(internal.workflows.generateSecondPassImage, {
+    await step.runAction(internal.nodeWorkflows.generateSecondPassImage, {
       generationId
     })
   }
@@ -111,161 +99,6 @@ export const addGenerationImage = internalMutation({
     await ctx.db.replace(generationId, {
       ...generation,
       images: [...generation.images, image]
-    })
-  }
-})
-
-export const generateFirstPassImage = internalAction({
-  args: { generationId: v.id('generations') },
-  handler: async (ctx, { generationId }): Promise<void> => {
-    const generation = await ctx.runQuery(api.workflows.getGeneration, {
-      generationId
-    })
-
-    if (!generation) {
-      throw new Error(`Generation not found ${generationId}`)
-    }
-
-    const prompt = templates[generation.template]
-
-    console.log('>>> generating first pass image', {
-      generationId,
-      githubUsername: generation.githubUsername,
-      prompt
-    })
-    const completion = await openai.chat.completions.create({
-      model,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: prompt
-            },
-            {
-              type: 'image_url',
-              image_url: {
-                url: generation.images[0]!.imageUrl
-              }
-            }
-          ]
-        }
-      ]
-    })
-
-    const imageDataUrl: string | undefined = (
-      completion.choices[0]!.message as any
-    ).images?.[0]?.image_url?.url
-    assert(imageDataUrl, 'No image URL returned from first-pass')
-
-    const imageParts = imageDataUrl!.split(',')
-    const contentType = imageParts[0]?.includes('image/png')
-      ? 'image/png'
-      : 'image/jpeg'
-    // const imageData = Buffer.from(imageDataUrl!.split(',')[1]!, 'base64')
-    const imageData = base64ToUint8Array(imageDataUrl!.split(',')[1]!)
-    const imageSize = imageDimensionsFromData(imageData)!
-    assert(imageSize.width > 0 && imageSize.height > 0, 'Invalid image size')
-
-    const storageId = await ctx.storage.store(new Blob([imageData]))
-    assert(storageId)
-    const imageUrl = await ctx.storage.getUrl(storageId)
-    assert(imageUrl)
-
-    console.log('<<< generating first pass image', {
-      generationId,
-      githubUsername: generation.githubUsername,
-      prompt,
-      imageUrl
-    })
-
-    await ctx.runMutation(internal.workflows.addGenerationImage, {
-      generationId,
-      image: {
-        imageUrl,
-        width: imageSize.width,
-        height: imageSize.height,
-        contentType,
-        type: 'first-pass'
-      }
-    })
-  }
-})
-
-export const generateSecondPassImage = internalAction({
-  args: { generationId: v.id('generations') },
-  handler: async (ctx, { generationId }): Promise<void> => {
-    const generation = await ctx.runQuery(api.workflows.getGeneration, {
-      generationId
-    })
-
-    if (!generation) {
-      throw new Error(`Generation not found ${generationId}`)
-    }
-
-    console.log('>>> generating second pass image', {
-      generationId,
-      githubUsername: generation.githubUsername,
-      prompt: generation.prompt
-    })
-
-    const completion = await openai.chat.completions.create({
-      model,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: generation.prompt
-            },
-            {
-              type: 'image_url',
-              image_url: {
-                url: generation.images[1]!.imageUrl
-              }
-            }
-          ]
-        }
-      ]
-    })
-
-    const imageDataUrl: string | undefined = (
-      completion.choices[0]!.message as any
-    ).images?.[0]?.image_url?.url
-    assert(imageDataUrl, 'No image URL returned from first-pass')
-
-    const imageParts = imageDataUrl!.split(',')
-    const contentType = imageParts[0]?.includes('image/png')
-      ? 'image/png'
-      : 'image/jpeg'
-    // const imageData = Buffer.from(imageDataUrl!.split(',')[1]!, 'base64')
-    const imageData = base64ToUint8Array(imageDataUrl!.split(',')[1]!)
-    const imageSize = imageDimensionsFromData(imageData)!
-    assert(imageSize.width > 0 && imageSize.height > 0, 'Invalid image size')
-
-    const storageId = await ctx.storage.store(new Blob([imageData]))
-    assert(storageId)
-    const imageUrl = await ctx.storage.getUrl(storageId)
-    assert(imageUrl)
-
-    console.log('<<< generating second pass image', {
-      generationId,
-      githubUsername: generation.githubUsername,
-      prompt: generation.prompt,
-      imageUrl
-    })
-
-    await ctx.runMutation(internal.workflows.addGenerationImage, {
-      generationId,
-      image: {
-        imageUrl,
-        width: imageSize.width,
-        height: imageSize.height,
-        contentType,
-        type: 'final'
-      }
     })
   }
 })

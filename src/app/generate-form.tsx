@@ -206,7 +206,7 @@ export function GenerateForm({
       />
 
       <div className='relative group flex flex-col gap-4 w-full max-w-4xl pointer-events-none'>
-        <Card className='bg-card overflow-hidden'>
+        <Card className='relative bg-card overflow-hidden'>
           <Image
             src={currentGenerationImage.imageUrl}
             alt={
@@ -222,7 +222,7 @@ export function GenerateForm({
 
           {(isLoading || generationWorkflow?.type === 'inProgress') && (
             <div className='absolute top-0 left-0 right-0 bottom-0 bg-background/70 pointer-events-none rounded-3xl'>
-              <LoadingIndicator />
+              <LoadingIndicator fill />
             </div>
           )}
         </Card>

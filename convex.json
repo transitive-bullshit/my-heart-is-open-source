@@ -2,7 +2,7 @@
   "node": {
     "externalPackages": [
       "playwright-core",
-      "chromium-bidi"
+      "sharp"
     ]
   }
 }
