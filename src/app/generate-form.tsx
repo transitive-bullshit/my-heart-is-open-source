@@ -95,6 +95,7 @@ export function GenerateForm({
       generationWorkflow?.type !== 'inProgress' &&
       generation?.images.at(-1)?.type === 'final'
     ) {
+      console.log('generation is complete')
       setIsLoading(false)
     }
   }, [isLoading, generationWorkflow, generation])
