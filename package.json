@@ -17,6 +17,7 @@
     "dev:next": "next dev",
     "dev:convex": "convex dev",
     "build": "next build",
+    "deploy": "convex deploy -y",
     "start": "next start",
     "clean": "del .next",
     "test": "run-s test:*",
