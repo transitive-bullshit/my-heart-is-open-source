@@ -76,7 +76,7 @@ const images = [
     image: Example7,
     template: 'billboard',
     prompt:
-      `place this billboard into a a dark, rainy, black & white comic book city from Watchmen`.trim()
+      `place this billboard into a dark, rainy, gritty anime city at night. make sure the billboard is clearly visible with lighting.`.trim()
   },
   {
     image: Example8,
@@ -143,7 +143,7 @@ const images = [
     image: Example17,
     template: 'billboard',
     prompt:
-      `place this billboard into a a dark, rainy, black & white comic book city from Watchmen`.trim()
+      `place this billboard into a dark, rainy, black & white comic book city from Watchmen`.trim()
   },
   {
     image: Example18,
