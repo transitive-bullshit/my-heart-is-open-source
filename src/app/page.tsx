@@ -6,7 +6,7 @@ import { Suspense, useState } from 'react'
 
 import { Card } from '@/components/card'
 import { DotScreenShader } from '@/components/ui/dot-shader-background'
-import { githubSponsorUrl } from '@/lib/config'
+import { githubSponsorUrl, githubUrl } from '@/lib/config'
 import { exampleImages } from '@/lib/example-images'
 
 import { GenerateForm } from './generate-form'
@@ -81,8 +81,16 @@ export default function HomePage() {
         </h2>
 
         <p className='text-center text-balance text-md max-w-2xl'>
-          I'm providing this project for free, but if you've found it useful,
-          please consider a{' '}
+          This project is{' '}
+          <Link
+            href={githubUrl}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='link'
+          >
+            open source
+          </Link>{' '}
+          and 100% free, but if you've found it useful, please consider a{' '}
           <Link
             href={githubSponsorUrl}
             target='_blank'
