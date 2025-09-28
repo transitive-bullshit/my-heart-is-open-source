@@ -3,14 +3,16 @@ export const isServer = globalThis.window === undefined
 export const isSafari =
   !isServer && /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 
-export const title = 'My Heart is Open Source'
+export const isChrome =
+  !isServer && !isSafari && /(chrome)/i.test(navigator.userAgent)
+
+export const title = 'My heart is open source'
 export const description = 'TODO'
-// export const domain = 'myheartisopensource.com'
-export const domain = 'my-heart-is-open-source.vercel.app'
+export const domain = 'myheartisopensource.com'
 
 export const author = 'Travis Fischer'
 export const authorTwitterUsername = 'transitive_bs'
-export const copyright = `© ${new Date().getFullYear()} Transitive Bullshit. All rights reserved.`
+export const copyright = `© ${new Date().getFullYear()} Travis Fischer. All rights reserved.`
 
 // external urls
 export const twitterUrl = `https://x.com/${authorTwitterUsername}`

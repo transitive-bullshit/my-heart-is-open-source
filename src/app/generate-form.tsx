@@ -5,11 +5,12 @@ import { useForm } from '@tanstack/react-form'
 import { useMutation, useQuery } from 'convex/react'
 import { Loader2Icon } from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import * as z from 'zod'
 
 import type { Id } from '@/convex/_generated/dataModel'
 import { Card } from '@/components/card'
+import { ImageActionMenu } from '@/components/image-action-menu'
 import { LoadingIndicator } from '@/components/loading-indicator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -89,6 +90,17 @@ export function GenerateForm({
     }
   })
 
+  // TODO: use last selected example image
+  const currentGeneration = useMemo(
+    () =>
+      generation?.images.length
+        ? generation
+        : (exampleImages.find((e) => e._id === selectedExampleId) ??
+          exampleImages[0]!),
+    [generation, selectedExampleId]
+  )
+  const currentGenerationImage = currentGeneration.images.at(-1)!
+
   useEffect(() => {
     if (
       isLoading &&
@@ -110,13 +122,6 @@ export function GenerateForm({
       }
     }
   }, [selectedExampleId, form])
-
-  // TODO: use last selected example image
-  const currentGeneration = generation?.images.length
-    ? generation
-    : (exampleImages.find((e) => e._id === selectedExampleId) ??
-      exampleImages[0]!)
-  const currentGenerationImage = currentGeneration.images.at(-1)!
 
   console.log('currentGeneration', {
     currentGeneration,
@@ -206,8 +211,8 @@ export function GenerateForm({
         className='w-5 pointer-events-none'
       />
 
-      <div className='relative group flex flex-col gap-4 w-full max-w-4xl pointer-events-none'>
-        <Card className='relative bg-card overflow-hidden'>
+      <div className='relative group flex flex-col gap-4 w-full max-w-4xl'>
+        <Card className='relative bg-card overflow-hidden pointer-events-none'>
           <Image
             src={currentGenerationImage.imageUrl}
             alt={
@@ -227,6 +232,8 @@ export function GenerateForm({
             </div>
           )}
         </Card>
+
+        <ImageActionMenu generatedImage={currentGenerationImage} />
       </div>
     </div>
   )
