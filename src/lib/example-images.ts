@@ -76,7 +76,7 @@ const images = [
     image: Example7,
     template: 'billboard',
     prompt:
-      `place this billboard into a dark, rainy, gritty anime city at night. make sure the billboard is clearly visible with lighting.`.trim()
+      `place this billboard into a comic book panel of a dark gritty city with a stormy sky in the background, ominous tones, wide angle. high contrast style inspired by Travis Charest, Phil Noto, and Gary Millidge. make sure the billboard is clearly visible.`.trim()
   },
   {
     image: Example8,
