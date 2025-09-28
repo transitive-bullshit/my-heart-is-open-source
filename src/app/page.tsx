@@ -27,8 +27,8 @@ export default function HomePage() {
 
           <h5 className='text-center text-balance text-md max-w-2xl'>
             Show your love for open source with a custom billboard image{' '}
-            <span className='italic'>based on live data</span> from your
-            personal GitHub contribution graph
+            <span className='italic'>based on live data</span> from your GitHub
+            contribution graph
           </h5>
 
           <GenerateForm selectedExampleId={selectedExampleId} />

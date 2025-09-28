@@ -5,7 +5,7 @@
 
 # My heart is open source 💕 <!-- omit from toc -->
 
-> Show your love for open source with a custom billboard image _based on live data_ from your personal GitHub contribution graph.
+> Show your love for open source with a custom billboard image _based on live data_ from your GitHub contribution graph.
 
 ## Examples
 
