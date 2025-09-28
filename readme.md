@@ -1,82 +1,51 @@
 <p>
-  <a href="https://github.com/transitive-bullshit/embed-anything/actions/workflows/main.yml"><img alt="Build Status" src="https://github.com/transitive-bullshit/embed-anything/actions/workflows/main.yml/badge.svg" /></a>
+  <a href="https://github.com/transitive-bullshit/my-heart-is-open-source/actions/workflows/main.yml"><img alt="Build Status" src="https://github.com/transitive-bullshit/my-heart-is-open-source/actions/workflows/main.yml/badge.svg" /></a>
   <a href="https://prettier.io"><img alt="Prettier Code Formatting" src="https://img.shields.io/badge/code_style-prettier-brightgreen.svg" /></a>
 </p>
 
-# Embed Anything <!-- omit from toc -->
+# My heart is open source 💕 <!-- omit from toc -->
 
-## examples
+> Show your love for open source with a custom billboard image _based on live data_ from your personal GitHub contribution graph.
 
-### github contributor graph
+## Examples
 
-<img alt="github contributor graph" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/public/github-contribution-graph.png">
+<p align="center">
+  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/0.jpg" width="45">
+  &nbsp; &nbsp; &nbsp; &nbsp;
 
-`http://localhost:3000/o/image.png?url=https%3A%2F%2Fgithub.com%2Ftransitive-bullshit&s=.js-calendar-graph+%3E+div&p=16&br=12&bg=%23fff`
+  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/1.jpg" width="45">
+</p>
 
-```ts
-new URLSearchParams({
-  url: 'https://github.com/transitive-bullshit',
-  s: '.js-calendar-graph > div',
-  p: 16,
-  br: 12,
-  bg: '#fff'
-}).toString()
-```
+<p align="center">
+  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/2.jpg" width="45">
+  &nbsp; &nbsp; &nbsp; &nbsp;
 
-### github repo star count
+  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/10.jpg" width="45">
+</p>
 
-<img alt="github repo star count" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/public/github-repo-star-count">
+## How it works
 
-`http://localhost:3000/o/image.png?url=https%3A%2F%2Fgithub.com%2Ftransitive-bullshit%2Fagentic&s=%23repository-details-container+a%5Baria-label%3D%22You+must+be+signed+in+to+star+a+repository%22%5D&ob=true`
+First we take a screenshot of your GitHub contribution graph using headless Chrome via Playwright hosted in the cloud with [Kernel](https://www.onkernel.com).
 
-```ts
-new URLSearchParams({
-  url: 'https://github.com/transitive-bullshit/agentic',
-  s: '#repository-details-container a[aria-label="You must be signed in to star a repository"]',
-  ob: true
-}).toString()
-```
+<img alt="github contributor graph" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/github-contribution-graph.png">
 
-### twitter header
+Second, we use [nano banana](https://aistudio.google.com/models/gemini-2-5-flash-image) to create a billboard image with a green screen background and your contribution graph on top.
 
-<img alt="twitter header" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/public/twitter-header.jpg" width="600">
+Breaking this into its own step helps the image model match your contribution graph more closely, though it likely still won't be 100% accurate.
 
-`http://localhost:3000/o/image.png?url=https%3A%2F%2Fx.com%2Ftransitive_bs&s=div%3Ahas%28%3E+a%5Bhref%24%3D%22%2Fheader_photo%22%5D%29`
+<img alt="green screen output image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/step-1.jpg">
 
-```ts
-new URLSearchParams({
-  url: 'https://x.com/transitive_bs',
-  s: 'div:has(> a[href$="/header_photo"])',
-  css: 'div[style^="position: absolute"] { display: none }'
-}).toString()
-```
+Lastly, we use [nano banana](https://aistudio.google.com/models/gemini-2-5-flash-image) again to create the final composite image with a specific style.
 
-### twitter pinned tweet
+<img alt="final output image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/step-2.jpg">
 
-<img alt="pinned tweet" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/public/pinned-tweet.png" width="600">
+## Tech stack
 
-`http://localhost:3000/o/image.png?url=https%3A%2F%2Fx.com%2Ftransitive_bs&s=article&css=div%5Bstyle%5E%3D%22position%3A+absolute%22%5D+%7B+display%3A+none+%7D`
-
-```ts
-new URLSearchParams({
-  url: 'https://x.com/transitive_bs',
-  s: 'article',
-  css: 'div[style^="position: absolute"] { display: none }'
-}).toString()
-```
-
-### twitter nth public tweet
-
-<img alt="twitter-nth-tweet" src="https://raw.githubusercontent.com/transitive-bullshit/embed-anything/main/public/twitter-nth-tweet.jpg" width="600">
-
-```ts
-new URLSearchParams({
-  url: 'https://x.com/transitive_bs',
-  s: 'article',
-  css: 'div[style^="position: absolute"] { display: none }',
-  nth: 2
-}).toString()
-```
+- [TypeScript](https://www.typescriptlang.org), [React](https://react.dev), [Next.js](https://nextjs.org) - full-stack webapp
+- [Convex](https://convex.dev/referral/TRAVIS5611) - reactive backend, database, serverless functions, and lite durable workflows
+- [Vercel](https://vercel.com) - web hosting and analytics
+- [Kernel](https://www.onkernel.com) - hosted headless browser
+- [OpenRouter](https://openrouter.ai/?referral=hrg) - used to call the [gemini nano banana api](https://aistudio.google.com/models/gemini-2-5-flash-image)
 
 ## License
 

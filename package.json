@@ -1,11 +1,11 @@
 {
-  "name": "embed-anything",
+  "name": "my-heart-is-open-source",
   "private": true,
   "author": "Travis Fischer <travis@transitivebullsh.it>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/transitive-bullshit/embed-anything.git"
+    "url": "git+https://github.com/transitive-bullshit/my-heart-is-open-source.git"
   },
   "packageManager": "pnpm@10.17.0",
   "engines": {
