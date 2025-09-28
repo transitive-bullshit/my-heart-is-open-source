@@ -25,7 +25,7 @@
 
 ## How it works
 
-First we take a screenshot of your GitHub contribution graph using [Kernel](https://www.onkernel.com).
+First we take a screenshot of your GitHub contribution graph using headless chrome via [Kernel](https://www.onkernel.com).
 
 <img alt="github contributor graph" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/github-contribution-graph.png">
 
@@ -47,8 +47,8 @@ Notice how the billboard has a similar texture, but the contents differ greatly 
 
 ## Tech stack
 
-- [TypeScript](https://www.typescriptlang.org), [React](https://react.dev), [Next.js](https://nextjs.org) - full-stack webapp
-- [Convex](https://convex.dev/referral/TRAVIS5611) - reactive backend, database, serverless functions, and lite durable workflows
+- [TypeScript](https://www.typescriptlang.org), [React](https://react.dev), [Next.js](https://nextjs.org) - webapp
+- [Convex](https://convex.dev/referral/TRAVIS5611) - backend and database
 - [Vercel](https://vercel.com) - web hosting and analytics
 - [Kernel](https://www.onkernel.com) - hosted headless browser
 - [OpenRouter](https://openrouter.ai/?referral=hrg) - used to call the [gemini nano banana api](https://aistudio.google.com/models/gemini-2-5-flash-image)
@@ -56,3 +56,5 @@ Notice how the billboard has a similar texture, but the contents differ greatly 
 ## License
 
 MIT © [Travis Fischer](https://x.com/transitive_bs)
+
+I'm providing this project for free, but if you've found it useful, please consider [sponsoring me on GitHub](https://github.com/sponsors/transitive-bullshit) to help cover the API costs.

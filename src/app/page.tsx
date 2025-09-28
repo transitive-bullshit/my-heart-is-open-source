@@ -1,10 +1,12 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useState } from 'react'
 
 import { Card } from '@/components/card'
 import { DotScreenShader } from '@/components/ui/dot-shader-background'
+import { githubSponsorUrl } from '@/lib/config'
 import { exampleImages } from '@/lib/example-images'
 
 import { GenerateForm } from './generate-form'
@@ -15,12 +17,12 @@ export default function HomePage() {
 
   return (
     <>
-      <section className='relative flex flex-col gap-10 px-2 pt-8 pb-16 items-center justify-center min-h-screen'>
+      <section className='relative flex flex-col gap-10 px-2 pt-8 pb-16 items-center justify-center min-h-screen max-w-full'>
         <div className='absolute inset-0'>
           <DotScreenShader />
         </div>
 
-        <div className='relative flex flex-col gap-10 items-center'>
+        <div className='relative flex flex-col gap-10 items-center max-w-full'>
           <h1 className='text-center text-balance leading-snug md:leading-none text-4xl font-semibold'>
             My Heart is Open Source 💕
           </h1>
@@ -35,7 +37,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className='flex flex-col gap-10 px-2 items-center'>
+      <section className='relative flex flex-col gap-10 px-2 items-center max-w-full'>
         <h2 className='text-center text-balance leading-snug md:leading-none text-4xl font-semibold'>
           Different styles to choose from
         </h2>
@@ -69,6 +71,26 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+      </section>
+
+      <section className='relative flex flex-col gap-10 px-2 items-center max-w-full'>
+        <h2 className='text-center text-balance leading-snug md:leading-none text-4xl font-semibold'>
+          Supported by sponsors
+        </h2>
+
+        <p className='text-center text-balance text-md max-w-2xl'>
+          I'm providing this project for free, but if you've found it useful,
+          please consider a{' '}
+          <Link
+            href={githubSponsorUrl}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='link'
+          >
+            one-time sponsorship on GitHub
+          </Link>{' '}
+          to help cover the API costs.
+        </p>
       </section>
     </>
   )

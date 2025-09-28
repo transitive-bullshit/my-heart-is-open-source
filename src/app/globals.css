@@ -153,7 +153,7 @@ a .link {
   opacity: 1;
   padding-bottom: 0.1rem;
   border-bottom-width: 0.1rem;
-  border-bottom-color: transparent;
+  border-bottom-color: var(--primary);
   background: transparent;
   background-origin: border-box;
   background-repeat: no-repeat;

@@ -48,10 +48,10 @@ export default function RootLayout({
       <body className={`${geist.variable} antialiased`}>
         <NuqsAdapter>
           <Providers>
-            <div className='relative w-full min-h-[100vh] flex flex-col items-center'>
+            <div className='relative w-full min-h-[100vh] flex flex-col items-center max-w-full'>
               {/* <Header /> */}
 
-              <main className='relative w-full flex-1 flex flex-col items-center gap-16 md:gap-32 pb-16 overflow-hidden'>
+              <main className='relative w-full max-w-full flex-1 flex flex-col items-center gap-16 md:gap-32 pb-16 overflow-hidden'>
                 {children}
               </main>
 

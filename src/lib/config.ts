@@ -18,6 +18,9 @@ export const copyright = `© ${new Date().getFullYear()} Travis Fischer. All rig
 export const twitterUrl = `https://x.com/${authorTwitterUsername}`
 export const githubUrl =
   'https://github.com/transitive-bullshit/my-heart-is-open-source'
+export const githubSponsorUrl =
+  // 'https://github.com/sponsors/transitive-bullshit'
+  'https://github.com/sponsors/transitive-bullshit?frequency=one-time'
 
 export const env = process.env.ENVIRONMENT ?? 'development'
 export const isVercel = !!(

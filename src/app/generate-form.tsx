@@ -203,8 +203,8 @@ export function GenerateForm({
   }, [selectedExampleId, form])
 
   return (
-    <div className='flex flex-col gap-4 items-center pointer-events-none'>
-      <Card className='bg-card w-md max-w-md'>
+    <div className='flex flex-col gap-4 items-center pointer-events-none max-w-full'>
+      <Card className='bg-card w-md max-w-full'>
         <form
           className={cn('flex flex-col gap-6 w-full p-4')}
           onSubmit={(e) => {
@@ -278,9 +278,15 @@ export function GenerateForm({
       </Card>
 
       <img
-        src='/down-arrow.svg'
+        src='/down-arrow-light.svg'
         alt='Down Arrow'
-        className='w-5 pointer-events-none'
+        className='w-5 pointer-events-none block dark:hidden'
+      />
+
+      <img
+        src='/down-arrow-dark.svg'
+        alt='Down Arrow'
+        className='w-5 pointer-events-none hidden dark:block'
       />
 
       <div className='relative group flex flex-col gap-4 w-full max-w-4xl select-none'>
