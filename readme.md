@@ -24,13 +24,14 @@
   <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/10.jpg" width="48%">
 </p>
 
-## Try it out live for free
+## 100% free
 
 [myheartisopensource.com](https://myheartisopensource.com)
 
-- 100% free
 - enter your github username to use your own contribution graph
 - use any of the preset styles or a custom prompt
+- no limits in place currently...
+- please consider [sponsoring me on github](https://github.com/sponsors/transitive-bullshit) to help cover the API costs 🙏
 
 ## How it works
 
