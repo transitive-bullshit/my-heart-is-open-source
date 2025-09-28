@@ -10,16 +10,16 @@
 ## Examples
 
 <p align="center">
-  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/0.jpg" width="45%">
-  &nbsp; &nbsp; &nbsp; &nbsp;
-  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/1.jpg" width="45%">
+  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/0.jpg" width="48%">
+  &nbsp; &nbsp;
+  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/1.jpg" width="48%">
 </p>
 
 <p align="center">
-  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/2.jpg" width="45">
-  &nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/2.jpg" width="48%">
+  &nbsp; &nbsp;
 
-  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/10.jpg" width="45">
+  <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/10.jpg" width="48%">
 </p>
 
 ## How it works
