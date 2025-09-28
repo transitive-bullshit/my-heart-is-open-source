@@ -52,7 +52,9 @@ Lastly, we use [nano banana](https://aistudio.google.com/models/gemini-2-5-flash
 <details>
 <summary>One-shot example</summary>
 
-I tried several different approaches for getting the billboard content to match the source contribution graph as closely as possible. For example, here's what happens when you try to have nano banana one-shot the output:
+<br />
+
+**Note**: I tried several different approaches for getting the billboard content to match the source contribution graph as closely as possible. For example, here's what happens when you try to have nano banana one-shot the output:
 
 <img alt="one-shot example image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/one-shot.jpg">
 
