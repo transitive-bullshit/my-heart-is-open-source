@@ -7,6 +7,8 @@
 
 > Show your love for open source with a custom billboard image _based on live data_ from your GitHub contribution graph.
 
+[myheartisopensource.com](https://myheartisopensource.com)
+
 ## Examples
 
 <p align="center">
@@ -25,6 +27,10 @@
 ## Try it out live for free
 
 [myheartisopensource.com](https://myheartisopensource.com)
+
+- 100% free
+- enter your github username to use your own contribution graph
+- use any of the preset styles or a custom prompt
 
 ## How it works
 
