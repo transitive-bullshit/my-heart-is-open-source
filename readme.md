@@ -49,11 +49,16 @@ Lastly, we use [nano banana](https://aistudio.google.com/models/gemini-2-5-flash
 
 <img alt="final output image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/step-2.jpg">
 
-**Note**: I tried several different approaches for getting the billboard content to match the source contribution graph as closely as possible. For example, here's what happens when you try to have nano banana one-shot the output:
+<details>
+<summary>One-shot example</summary>
+
+I tried several different approaches for getting the billboard content to match the source contribution graph as closely as possible. For example, here's what happens when you try to have nano banana one-shot the output:
 
 <img alt="one-shot example image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/one-shot.jpg">
 
 Notice how the billboard has a similar texture, but the contents differ greatly from the source contribution graph. I attribute this to the model having to "do too much" in one pass, which is why I ended up going with a solution which broke the task into 2 passes.
+
+</details>
 
 ## Tech stack
 
