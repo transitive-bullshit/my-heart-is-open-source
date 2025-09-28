@@ -25,13 +25,16 @@ import {
 import * as config from '@/lib/config'
 import { convertImageToPng } from '@/lib/convert-image-to-png'
 import { toastError } from '@/lib/notifications'
+import { cn } from '@/lib/utils'
 
 type Status = 'success' | 'error' | 'loading' | 'idle'
 
 export function ImageActionMenu({
-  generatedImage
+  generatedImage,
+  className
 }: {
   generatedImage: types.GeneratedImage
+  className?: string
 }) {
   const [status, setStatus] = useState<Status>('idle')
   // const twitterShareUrl = new URL('https://x.com/intent/tweet')
@@ -95,8 +98,8 @@ export function ImageActionMenu({
 
   return (
     <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild className='place-self-end'>
-        <Button variant='secondary' aria-label='Actions'>
+      <DropdownMenuTrigger asChild className={cn(className)}>
+        <Button aria-label='Actions'>
           <span className='mr-1'>
             {status === 'success' ? (
               <Check />

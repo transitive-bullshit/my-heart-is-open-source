@@ -132,7 +132,7 @@ export function GenerateForm({
   })
 
   return (
-    <div className='flex flex-col gap-4 items-center'>
+    <div className='flex flex-col gap-4 items-center pointer-events-none'>
       <Card className='bg-card w-full max-w-md'>
         <form
           className={cn('flex flex-col gap-6 w-full p-4')}
@@ -153,6 +153,7 @@ export function GenerateForm({
                   type='text'
                   required
                   placeholder='transitive-bullshit'
+                  className='pointer-events-auto'
                   autoFocus={true}
                   value={field.state.value}
                   onBlur={field.handleBlur}
@@ -176,7 +177,7 @@ export function GenerateForm({
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e: any) => field.handleChange(e.target.value)}
-                  className='min-h-24'
+                  className='min-h-28 pointer-events-auto'
                 />
               </div>
             )}
@@ -192,7 +193,7 @@ export function GenerateForm({
               <Button
                 type='submit'
                 disabled={!(isTouched && canSubmit)}
-                className='w-full'
+                className='w-full pointer-events-auto'
               >
                 {(isSubmitting || isLoading) && (
                   <Loader2Icon className='animate-spin' />
@@ -223,7 +224,7 @@ export function GenerateForm({
             height={currentGenerationImage.height}
             placeholder={currentGenerationImage.blurDataUrl ? 'blur' : 'empty'}
             blurDataURL={currentGenerationImage.blurDataUrl}
-            className='rounded-3xl w-full'
+            className='rounded-3xl w-full pointer-events-auto'
           />
 
           {(isLoading || generationWorkflow?.type === 'inProgress') && (
@@ -233,7 +234,10 @@ export function GenerateForm({
           )}
         </Card>
 
-        <ImageActionMenu generatedImage={currentGenerationImage} />
+        <ImageActionMenu
+          generatedImage={currentGenerationImage}
+          className='place-self-end pointer-events-auto mr-2'
+        />
       </div>
     </div>
   )

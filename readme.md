@@ -25,11 +25,11 @@
 
 ## How it works
 
-First we take a screenshot of your GitHub contribution graph using headless Chrome via Playwright hosted in the cloud with [Kernel](https://www.onkernel.com).
+First we take a screenshot of your GitHub contribution graph using [Kernel](https://www.onkernel.com).
 
 <img alt="github contributor graph" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/github-contribution-graph.png">
 
-Second, we use [nano banana](https://aistudio.google.com/models/gemini-2-5-flash-image) to create a billboard image with a green screen background and your contribution graph on top.
+Then, we use [nano banana](https://aistudio.google.com/models/gemini-2-5-flash-image) to create a billboard image with a green screen background and your contribution graph on top.
 
 Breaking this into its own step helps the image model match your contribution graph more closely, though it likely still won't be 100% accurate.
 
@@ -38,6 +38,12 @@ Breaking this into its own step helps the image model match your contribution gr
 Lastly, we use [nano banana](https://aistudio.google.com/models/gemini-2-5-flash-image) again to create the final composite image with a specific style.
 
 <img alt="final output image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/step-2.jpg">
+
+**Note**: I tried several different approaches for getting the billboard content to match the source contribution graph as closely as possible. For example, here's what happens when you try to have nano banana one-shot the output:
+
+<img alt="one-shot example image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/one-shot.jpg">
+
+Notice how the billboard has a similar texture, but the contents differ greatly from the source contribution graph. I attribute this to trying to have the model "do too much" in onen pass, which is why I ended up going with a solution which broke the composition up into 2 passes.
 
 ## Tech stack
 

@@ -9,8 +9,13 @@ import { v } from 'convex/values'
 import type { Id } from './_generated/dataModel'
 import type { Generation } from './types'
 import { components, internal } from './_generated/api'
-import { internalMutation, mutation, query } from './_generated/server'
-import { GeneratedImageSchema } from './schema'
+import {
+  internalMutation,
+  internalQuery,
+  mutation,
+  query
+} from './_generated/server'
+import { GeneratedImageSchema, GenerationStatus } from './schema'
 
 const createGenerationWorkflowArgs = {
   githubUsername: v.string(),
@@ -78,6 +83,22 @@ export const getGeneration = query({
   }
 })
 
+export const getLatestGenerationForGitHubUser = internalQuery({
+  args: { githubUsername: v.string(), status: GenerationStatus },
+  handler: async (
+    ctx,
+    { githubUsername, status }
+  ): Promise<Generation | null> => {
+    return ctx.db
+      .query('generations')
+      .withIndex('by_github_username_and_status', (q) =>
+        q.eq('githubUsername', githubUsername).eq('status', status)
+      )
+      .order('desc')
+      .first()
+  }
+})
+
 export const getGenerationWorkflow = query({
   args: { generationWorkflowId: vWorkflowId },
   handler: async (
@@ -98,6 +119,7 @@ export const addGenerationImage = internalMutation({
 
     await ctx.db.replace(generationId, {
       ...generation,
+      status: image.type,
       images: [...generation.images, image]
     })
   }
