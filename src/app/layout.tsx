@@ -3,6 +3,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { Geist } from 'next/font/google'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Toaster } from 'sonner'
 
 import { Bootstrap } from '@/components/bootstrap'
@@ -45,21 +46,23 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={`${geist.variable} antialiased`}>
-        <Providers>
-          <div className='relative w-full min-h-[100vh] flex flex-col items-center'>
-            {/* <Header /> */}
+        <NuqsAdapter>
+          <Providers>
+            <div className='relative w-full min-h-[100vh] flex flex-col items-center'>
+              {/* <Header /> */}
 
-            <main className='relative w-full flex-1 flex flex-col items-center gap-16 md:gap-32 pb-16 overflow-hidden'>
-              {children}
-            </main>
+              <main className='relative w-full flex-1 flex flex-col items-center gap-16 md:gap-32 pb-16 overflow-hidden'>
+                {children}
+              </main>
 
-            <Toaster richColors duration={5000} />
-            <Footer />
-          </div>
+              <Toaster richColors duration={5000} />
+              <Footer />
+            </div>
 
-          <Analytics />
-          <Bootstrap />
-        </Providers>
+            <Analytics />
+            <Bootstrap />
+          </Providers>
+        </NuqsAdapter>
       </body>
     </html>
   )

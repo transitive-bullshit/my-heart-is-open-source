@@ -5,6 +5,7 @@ import { useForm } from '@tanstack/react-form'
 import { useMutation, useQuery } from 'convex/react'
 import { Loader2Icon } from 'lucide-react'
 import NextImage, { getImageProps } from 'next/image'
+import { parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import * as z from 'zod'
 
@@ -26,11 +27,18 @@ export function GenerateForm({
 }: {
   selectedExampleId?: string
 }) {
+  const [githubUsername, setGitHubUsername] = useQueryState(
+    'u',
+    parseAsString.withDefault('transitive-bullshit')
+  )
+  const [prompt, setPrompt] = useQueryState('p', parseAsString.withDefault(''))
+
   const [generationId, setGenerationId] = useState<Id<'generations'> | null>(
     null
   )
   const img = useRef<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingWorkflowId, setIsLoadingWorkflowId] =
+    useState<WorkflowId | null>(null)
   const [generationWorkflowId, setGenerationWorkflowId] =
     useState<WorkflowId | null>(null)
   const createGenerationWorkflow = useMutation(
@@ -55,8 +63,8 @@ export function GenerateForm({
 
   const form = useForm({
     defaultValues: {
-      githubUsername: 'transitive-bullshit',
-      prompt: ''
+      githubUsername,
+      prompt
     },
     validators: {
       onChange: z.object({
@@ -67,6 +75,20 @@ export function GenerateForm({
         prompt: z.string().nonempty()
       })
     },
+    listeners: {
+      onChange: async (state) => {
+        const currentGithubUsername =
+          state.formApi.getFieldValue('githubUsername')
+        if (githubUsername !== currentGithubUsername) {
+          void setGitHubUsername(currentGithubUsername)
+        }
+
+        const currentPrompt = state.formApi.getFieldValue('prompt')
+        if (prompt !== currentPrompt) {
+          void setPrompt(currentPrompt)
+        }
+      }
+    },
     onSubmit: async ({
       value: { githubUsername, prompt }
     }: {
@@ -74,12 +96,13 @@ export function GenerateForm({
     }) => {
       try {
         console.log('generating image for github username', githubUsername)
-        setIsLoading(true)
+        setIsLoadingWorkflowId('loading' as any)
         const { generationId, generationWorkflowId } =
           await createGenerationWorkflow({
             githubUsername,
             prompt
           })
+        setIsLoadingWorkflowId(generationWorkflowId)
         setGenerationId(generationId)
         setGenerationWorkflowId(generationWorkflowId)
       } catch (err: any) {
@@ -90,6 +113,16 @@ export function GenerateForm({
       }
     }
   })
+
+  useEffect(() => {
+    if (form.getFieldValue('githubUsername') !== githubUsername) {
+      form.setFieldValue('githubUsername', githubUsername)
+    }
+
+    if (form.getFieldValue('prompt') !== prompt) {
+      form.setFieldValue('prompt', prompt)
+    }
+  }, [githubUsername, prompt, form])
 
   // TODO: use last selected example image
   const currentGeneration = useMemo(
@@ -104,11 +137,19 @@ export function GenerateForm({
 
   useEffect(() => {
     if (
-      isLoading &&
-      generationWorkflow?.type !== 'inProgress' &&
+      isLoadingWorkflowId &&
+      isLoadingWorkflowId === generationWorkflowId &&
+      generationWorkflow &&
+      generationWorkflow.type !== 'inProgress' &&
+      generation === currentGeneration &&
       currentGenerationImage?.type === 'final'
     ) {
-      console.log('generation is complete; loading image...')
+      // console.log('generation is complete; loading image...', {
+      //   isLoadingWorkflowId,
+      //   generationWorkflowId,
+      //   generationWorkflow,
+      //   currentGenerationImage
+      // })
 
       if (img.current !== currentGenerationImage.imageUrl) {
         img.current = currentGenerationImage.imageUrl
@@ -121,27 +162,34 @@ export function GenerateForm({
         })
         const image = new Image()
         image.addEventListener('load', () => {
-          console.log('generation is complete; loaded image', {
-            src: currentGenerationImage.imageUrl,
-            optSrc: props.src
-          })
-          setIsLoading(false)
+          // console.log('generation is complete; loaded image', {
+          //   src: currentGenerationImage.imageUrl,
+          //   optSrc: props.src
+          // })
+          setIsLoadingWorkflowId(null)
         })
-        image.addEventListener('error', (err) => {
-          console.log(
-            'generation is complete; error loading image',
-            {
-              src: currentGenerationImage.imageUrl,
-              optSrc: props.src
-            },
-            err
-          )
-          setIsLoading(false)
+        image.addEventListener('error', () => {
+          // console.error(
+          //   'generation is complete; error loading image',
+          //   {
+          //     src: currentGenerationImage.imageUrl,
+          //     optSrc: props.src
+          //   },
+          //   err
+          // )
+          setIsLoadingWorkflowId(null)
         })
         image.src = props.src
       }
     }
-  }, [isLoading, generationWorkflow, currentGenerationImage])
+  }, [
+    isLoadingWorkflowId,
+    generationWorkflowId,
+    generationWorkflow,
+    generation,
+    currentGeneration,
+    currentGenerationImage
+  ])
 
   useEffect(() => {
     if (selectedExampleId) {
@@ -153,14 +201,6 @@ export function GenerateForm({
       }
     }
   }, [selectedExampleId, form])
-
-  console.log('currentGeneration', {
-    currentGeneration,
-    generation,
-    selectedExampleId,
-    isLoading,
-    currentGenerationImage
-  })
 
   return (
     <div className='flex flex-col gap-4 items-center pointer-events-none'>
@@ -226,7 +266,7 @@ export function GenerateForm({
                 disabled={!(isTouched && canSubmit)}
                 className='w-full pointer-events-auto'
               >
-                {(isSubmitting || isLoading) && (
+                {(isSubmitting || isLoadingWorkflowId) && (
                   <Loader2Icon className='animate-spin' />
                 )}
 
@@ -256,10 +296,16 @@ export function GenerateForm({
             placeholder={currentGenerationImage.blurDataUrl ? 'blur' : 'empty'}
             blurDataURL={currentGenerationImage.blurDataUrl}
             loading='eager'
-            className='rounded-3xl w-full pointer-events-auto'
+            className={cn(
+              'rounded-3xl w-full pointer-events-auto'
+              // currentGenerationImage.type === 'github-contribution-graph'
+              //   ? 'p-6'
+              //   : ''
+            )}
           />
 
-          {(isLoading || generationWorkflow?.type === 'inProgress') && (
+          {(isLoadingWorkflowId ||
+            generationWorkflow?.type === 'inProgress') && (
             <div className='absolute top-0 left-0 right-0 bottom-0 bg-background/70 pointer-events-none rounded-3xl'>
               <LoadingIndicator fill />
             </div>
