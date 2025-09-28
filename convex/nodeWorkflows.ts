@@ -13,6 +13,7 @@ import { internalAction } from './_generated/server'
 
 const model = 'google/gemini-2.5-flash-image-preview'
 const oneDayInMs = 86_400_000
+const cacheTimeInMs = 5 * oneDayInMs
 
 export const generateGithubContributionGraphImage = internalAction({
   args: { generationId: v.id('generations') },
@@ -36,7 +37,7 @@ export const generateGithubContributionGraphImage = internalAction({
     )
     if (
       latestGeneration &&
-      latestGeneration._creationTime > generation._creationTime - oneDayInMs
+      latestGeneration._creationTime > generation._creationTime - cacheTimeInMs
     ) {
       const image = latestGeneration.images.find(
         (image) => image.type === 'github-contribution-graph'
@@ -130,7 +131,7 @@ export const generateFirstPassImage = internalAction({
     // )
     // if (
     //   latestGeneration &&
-    //   latestGeneration._creationTime > generation._creationTime - oneDayInMs
+    //   latestGeneration._creationTime > generation._creationTime - cacheTimeInMs
     // ) {
     //   const image = latestGeneration.images.find(
     //     (image) => image.type === 'first-pass'
