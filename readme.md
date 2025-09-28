@@ -22,6 +22,10 @@
   <img alt="example billboard image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/10.jpg" width="48%">
 </p>
 
+## Try it out live for free
+
+[myheartisopensource.com](https://myheartisopensource.com)
+
 ## How it works
 
 First we take a screenshot of your GitHub contribution graph using headless chrome via [Kernel](https://www.onkernel.com).
