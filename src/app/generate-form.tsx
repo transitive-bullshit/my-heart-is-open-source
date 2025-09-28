@@ -4,8 +4,8 @@ import type { WorkflowId } from '@convex-dev/workflow'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQuery } from 'convex/react'
 import { Loader2Icon } from 'lucide-react'
-import Image from 'next/image'
-import { useEffect, useMemo, useState } from 'react'
+import NextImage, { getImageProps } from 'next/image'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as z from 'zod'
 
 import type { Id } from '@/convex/_generated/dataModel'
@@ -29,6 +29,7 @@ export function GenerateForm({
   const [generationId, setGenerationId] = useState<Id<'generations'> | null>(
     null
   )
+  const img = useRef<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [generationWorkflowId, setGenerationWorkflowId] =
     useState<WorkflowId | null>(null)
@@ -105,12 +106,42 @@ export function GenerateForm({
     if (
       isLoading &&
       generationWorkflow?.type !== 'inProgress' &&
-      generation?.images.at(-1)?.type === 'final'
+      currentGenerationImage?.type === 'final'
     ) {
-      console.log('generation is complete')
-      setIsLoading(false)
+      console.log('generation is complete; loading image...')
+
+      if (img.current !== currentGenerationImage.imageUrl) {
+        img.current = currentGenerationImage.imageUrl
+        const { props } = getImageProps({
+          src: currentGenerationImage.imageUrl,
+          alt: currentGenerationImage.altText || '',
+          width: currentGenerationImage.width,
+          height: currentGenerationImage.height,
+          loading: 'eager'
+        })
+        const image = new Image()
+        image.addEventListener('load', () => {
+          console.log('generation is complete; loaded image', {
+            src: currentGenerationImage.imageUrl,
+            optSrc: props.src
+          })
+          setIsLoading(false)
+        })
+        image.addEventListener('error', (err) => {
+          console.log(
+            'generation is complete; error loading image',
+            {
+              src: currentGenerationImage.imageUrl,
+              optSrc: props.src
+            },
+            err
+          )
+          setIsLoading(false)
+        })
+        image.src = props.src
+      }
     }
-  }, [isLoading, generationWorkflow, generation])
+  }, [isLoading, generationWorkflow, currentGenerationImage])
 
   useEffect(() => {
     if (selectedExampleId) {
@@ -133,7 +164,7 @@ export function GenerateForm({
 
   return (
     <div className='flex flex-col gap-4 items-center pointer-events-none'>
-      <Card className='bg-card w-full max-w-md'>
+      <Card className='bg-card w-md max-w-md'>
         <form
           className={cn('flex flex-col gap-6 w-full p-4')}
           onSubmit={(e) => {
@@ -212,9 +243,9 @@ export function GenerateForm({
         className='w-5 pointer-events-none'
       />
 
-      <div className='relative group flex flex-col gap-4 w-full max-w-4xl'>
+      <div className='relative group flex flex-col gap-4 w-full max-w-4xl select-none'>
         <Card className='relative bg-card overflow-hidden pointer-events-none'>
-          <Image
+          <NextImage
             src={currentGenerationImage.imageUrl}
             alt={
               currentGenerationImage.altText ||
@@ -224,6 +255,7 @@ export function GenerateForm({
             height={currentGenerationImage.height}
             placeholder={currentGenerationImage.blurDataUrl ? 'blur' : 'empty'}
             blurDataURL={currentGenerationImage.blurDataUrl}
+            loading='eager'
             className='rounded-3xl w-full pointer-events-auto'
           />
 

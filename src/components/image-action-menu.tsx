@@ -1,14 +1,7 @@
 'use client'
 
 import ky from 'ky'
-import {
-  Check,
-  // ExternalLink,
-  LoaderCircle,
-  Menu,
-  TriangleAlert
-} from 'lucide-react'
-// import Link from 'next/link'
+import { Check, LoaderCircle, Menu, TriangleAlert } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
