@@ -40,7 +40,14 @@ export async function getElementScreenshot({
       *, *::before, *::after {
         animation: none !important; transition: none !important;
       }
-      html { scroll-behavior: auto !important; }
+
+      body, html {
+        overflow-x: hidden !important;
+      }
+
+      ${selector} {
+        overflow-x: hidden !important;
+      }
     `
     })
 
