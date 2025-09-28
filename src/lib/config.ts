@@ -7,7 +7,8 @@ export const isChrome =
   !isServer && !isSafari && /(chrome)/i.test(navigator.userAgent)
 
 export const title = 'My heart is open source'
-export const description = 'TODO'
+export const description =
+  'Show your love for OSS with custom billboard images featuring your live GitHub contribution graph 💕'
 export const domain = 'myheartisopensource.com'
 
 export const author = 'Travis Fischer'
