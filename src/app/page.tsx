@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 
 import { Card } from '@/components/card'
 import { DotScreenShader } from '@/components/ui/dot-shader-background'
@@ -33,7 +33,9 @@ export default function HomePage() {
             contribution graph
           </h5>
 
-          <GenerateForm selectedExampleId={selectedExampleId} />
+          <Suspense>
+            <GenerateForm selectedExampleId={selectedExampleId} />
+          </Suspense>
         </div>
       </section>
 
