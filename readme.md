@@ -53,7 +53,7 @@ Lastly, we use [nano banana](https://aistudio.google.com/models/gemini-2-5-flash
 
 <img alt="one-shot example image" src="https://raw.githubusercontent.com/transitive-bullshit/my-heart-is-open-source/main/public/examples/one-shot.jpg">
 
-Notice how the billboard has a similar texture, but the contents differ greatly from the source contribution graph. I attribute this to trying to have the model "do too much" in onen pass, which is why I ended up going with a solution which broke the composition up into 2 passes.
+Notice how the billboard has a similar texture, but the contents differ greatly from the source contribution graph. I attribute this to the model having to "do too much" in one pass, which is why I ended up going with a solution which broke the task into 2 passes.
 
 ## Tech stack
 
