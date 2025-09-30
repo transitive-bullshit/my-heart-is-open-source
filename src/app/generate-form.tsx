@@ -29,7 +29,7 @@ export function GenerateForm({
 }) {
   const [githubUsername, setGitHubUsername] = useQueryState(
     'u',
-    parseAsString.withDefault('transitive-bullshit')
+    parseAsString.withDefault('')
   )
   const [prompt, setPrompt] = useQueryState('p', parseAsString.withDefault(''))
 
